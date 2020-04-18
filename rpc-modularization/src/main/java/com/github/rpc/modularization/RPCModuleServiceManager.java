@@ -3,20 +3,20 @@ package com.github.rpc.modularization;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RPCServiceManager {
+public class RPCModuleServiceManager {
 
     private static class RPCServiceManagerHolder {
-        private static final RPCServiceManager INSTANCE = new RPCServiceManager();
+        private static final RPCModuleServiceManager INSTANCE = new RPCModuleServiceManager();
     }
 
-    public static  RPCServiceManager getInstance() {
+    public static RPCModuleServiceManager getInstance() {
         return RPCServiceManagerHolder.INSTANCE;
     }
 
-    private Map<String, Class<? extends RPCServiceInterface>> allServicesDictionary;
-    private Map<String, RPCServiceInterface> allInstanceDictionary;
+    private Map<String, Class<? extends RPCModuleService>> allServicesDictionary;
+    private Map<String, RPCModuleService> allInstanceDictionary;
 
-    private RPCServiceManager() {
+    private RPCModuleServiceManager() {
         allServicesDictionary = new HashMap<>();
         allInstanceDictionary = new HashMap<>();
     }
@@ -28,7 +28,7 @@ public class RPCServiceManager {
      * @param service  实例协议描述
      * @param instance 服务实例对象
      */
-    public void registerService(Class<? extends RPCServiceInterface> service, RPCServiceInterface instance) {
+    public void registerService(Class<? extends RPCModuleService> service, RPCModuleService instance) {
         allInstanceDictionary.put(service.getSimpleName(), instance);
     }
 
@@ -38,7 +38,7 @@ public class RPCServiceManager {
      * @param service   实例协议描述
      * @param implClass 服务实例类
      */
-    public void registerService(Class<? extends RPCServiceInterface> service, Class<? extends RPCServiceInterface> implClass) {
+    public void registerService(Class<? extends RPCModuleService> service, Class<? extends RPCModuleService> implClass) {
         allServicesDictionary.put(service.getSimpleName(), implClass);
     }
 
@@ -47,32 +47,32 @@ public class RPCServiceManager {
      *
      * @param service 实例协议描述
      */
-    public void unregisterService(Class<? extends RPCServiceInterface> service) {
+    public void unregisterService(Class<? extends RPCModuleService> service) {
         allInstanceDictionary.remove(service.getSimpleName());
         allServicesDictionary.remove(service.getSimpleName());
     }
 
     /**
-     * 方便的服务查找接口，不用先调用{@link RPCServiceManager#getInstance}取得实例，参数具体描述见{@link RPCServiceManager#findService}
+     * 方便的服务查找接口，不用先调用{@link RPCModuleServiceManager#getInstance}取得实例，参数具体描述见{@link RPCModuleServiceManager#findService}
      *
      * @param <ServiceProtocol> 服务协议类型
      * @param service           实例协议描述
      * @return 创建的服务实例或者nil
      */
-    public static <ServiceProtocol extends RPCServiceInterface> ServiceProtocol findService(Class<ServiceProtocol> service) {
-        return RPCServiceManager.getInstance().innerFindService(service);
+    public static <ServiceProtocol extends RPCModuleService> ServiceProtocol findService(Class<ServiceProtocol> service) {
+        return RPCModuleServiceManager.getInstance().innerFindService(service);
     }
 
 
-    private <ServiceProtocol extends RPCServiceInterface> ServiceProtocol innerFindService(Class<ServiceProtocol> service) {
+    private <ServiceProtocol extends RPCModuleService> ServiceProtocol innerFindService(Class<ServiceProtocol> service) {
 
         String serviceName = service.getSimpleName();
-        RPCServiceInterface serviceInstance = allInstanceDictionary.get(serviceName);
+        RPCModuleService serviceInstance = allInstanceDictionary.get(serviceName);
         if (serviceInstance != null) {
             return (ServiceProtocol) serviceInstance;
         }
 
-        Class<? extends RPCServiceInterface> serviceImpl = allServicesDictionary.get(serviceName);
+        Class<? extends RPCModuleService> serviceImpl = allServicesDictionary.get(serviceName);
         if (serviceImpl == null) {
             return null;
         }
