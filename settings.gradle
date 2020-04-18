@@ -1,3 +1,9 @@
 rootProject.name='RPCModularization'
 include ':app'
 include ':rpc-modularization'
+
+include ':module_login_api'
+project(':module_login_api').projectDir = new File(rootDir, 'biz_module_api/module_login_api')
+
+include ':module_login'
+project(':module_login').projectDir = new File(rootDir, 'biz_module_iml/module_login')
