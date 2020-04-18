@@ -11,3 +11,9 @@ include ':module_topic_api'
 project(':module_topic_api').projectDir = new File(rootDir, 'biz_module_api/module_topic_api')
 include ':module_topic'
 project(':module_topic').projectDir = new File(rootDir, 'biz_module_iml/module_topic')
+
+
+include ':module_personalcenter_api'
+project(':module_personalcenter_api').projectDir = new File(rootDir, 'biz_module_api/module_personalcenter_api')
+include ':module_personalcenter'
+project(':module_personalcenter').projectDir = new File(rootDir, 'biz_module_iml/module_personalcenter')
