@@ -55,21 +55,21 @@ public class RPCModuleServiceManager {
     /**
      * 方便的服务查找接口，不用先调用{@link RPCModuleServiceManager#getInstance}取得实例，参数具体描述见{@link RPCModuleServiceManager#findService}
      *
-     * @param <ServiceProtocol> 服务协议类型
+     * @param <ModuleService> 服务协议类型
      * @param service           实例协议描述
      * @return 创建的服务实例或者nil
      */
-    public static <ServiceProtocol extends RPCModuleService> ServiceProtocol findService(Class<ServiceProtocol> service) {
+    public static <ModuleService extends RPCModuleService> ModuleService findService(Class<ModuleService> service) {
         return RPCModuleServiceManager.getInstance().innerFindService(service);
     }
 
 
-    private <ServiceProtocol extends RPCModuleService> ServiceProtocol innerFindService(Class<ServiceProtocol> service) {
+    private <ModuleService extends RPCModuleService> ModuleService innerFindService(Class<ModuleService> service) {
 
         String serviceName = service.getSimpleName();
         RPCModuleService serviceInstance = allInstanceDictionary.get(serviceName);
         if (serviceInstance != null) {
-            return (ServiceProtocol) serviceInstance;
+            return (ModuleService) serviceInstance;
         }
 
         Class<? extends RPCModuleService> serviceImpl = allServicesDictionary.get(serviceName);
@@ -80,7 +80,7 @@ public class RPCModuleServiceManager {
 
         try {
             serviceInstance = serviceImpl.newInstance();
-            return (ServiceProtocol) serviceInstance;
+            return (ModuleService) serviceInstance;
         } catch (Exception e) {
             e.printStackTrace();
         }
