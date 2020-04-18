@@ -29,6 +29,7 @@ dependencies {
     api app_dependencies.rpc_modularization
 
     api project(':module_personalcenter_api')
+    api project(':module_topic_api')
 
-
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }

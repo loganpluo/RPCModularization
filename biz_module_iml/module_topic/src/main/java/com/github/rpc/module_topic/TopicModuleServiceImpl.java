@@ -21,7 +21,7 @@ public class TopicModuleServiceImpl implements TopicModuleService {
             //cost query
             for(int i=0; i<10; i++){
                 Topic topic = new Topic();
-
+                topic.setName("话题"+i);
                 topics.add(topic);
             }
             getMyTopicListCallBack.result(0, "", topics);

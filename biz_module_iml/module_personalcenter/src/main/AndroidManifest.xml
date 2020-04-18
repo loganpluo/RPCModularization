@@ -1,2 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.rpc.module_personalcenter" />
+    package="com.github.rpc.module_personalcenter">
+
+    <application>
+        <activity android:name=".MyTopicListActivity"></activity>
+    </application>
+
+</manifest>
