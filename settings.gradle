@@ -1,2 +1,3 @@
 rootProject.name='RPCModularization'
 include ':app'
+include ':rpc-modularization'
