@@ -1,14 +1,46 @@
+#built application files
+#*.apk
+#*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+build/
+
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio
 *.iml
+.idea
+
+# Local IDEA workspace
+.idea/workspace.xml
+
+# Gradle cache
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+
+#li
+*.li
+
+# Log Files
+*.log
+
+# Mac System Files
 .DS_Store
-/build
+
+DebugToolsSetup.java
+
+
 /captures
+
 .externalNativeBuild
-.cxx
+
