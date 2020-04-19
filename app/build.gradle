@@ -35,5 +35,5 @@ dependencies {
 //        api project(":module_personalcenter")
 //        //addComponent 'module_personalcenter'
 //    }
-    addModule 'module_personalcenter'
+//    addModule 'module_personalcenter'
 }
