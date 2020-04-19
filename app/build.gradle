@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 ext.mainApp = true  //设置为true，表示此module为主app module，一直以application方式编译
 apply plugin: 'com.github.rpc.modularization'
 
@@ -23,17 +25,20 @@ android {
 }
 
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     api app_dependencies.rpc_modularization
+
     api project(":module_login")
     api project(":module_topic")
-//    if (!isDebugAlone.toBoolean()) {
-//        api project(":module_personalcenter")
-//        //addComponent 'module_personalcenter'
-//    }
-//    addModule 'module_personalcenter'
+
+    addModule 'module_personalcenter'//暂时只支持这种写法，addModule project(":module_personalcenter") 这个也后面再支持
+
+    // app config阶段module_personalcenter是以application存在才能出现可调试debug选项中
+    // 为了方便开发引入接口工程，其实app本质也是业务模块
+    api project(':module_personalcenter_api')
 }

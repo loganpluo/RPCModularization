@@ -10,9 +10,10 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-        if (isDebugAlone.toBoolean()) {
-            applicationId 'com.github.rpc.module_personalcenter.run'
-        }
+        println "defaultConfig applicationId"
+//        if (isDebugAlone.toBoolean()) {
+//            applicationId 'com.github.rpc.module_personalcenter.run'
+//        }
         consumerProguardFiles 'consumer-rules.pro'
     }
 
