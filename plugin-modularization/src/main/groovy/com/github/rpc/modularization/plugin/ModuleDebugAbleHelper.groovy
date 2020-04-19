@@ -94,39 +94,42 @@ class ModuleDebugAbleHelper {
 //        def curModuleIsBuildingApk = taskIsAssemble && (mainModuleName == null && isMainApp(project) || mainModuleName == project.name)
 
         //当前task 是module以application单独debug运行task 则无需把自己module添加依赖到其他地方，因为他不是library工程了
-        //如何判断当前任务是 以application单独debug运行task
-        boolean isModuleDebugRun = taskIsAssemble && (mainModuleName == project.name)
-        println "addComponentDependencyMethod isModuleDebugRun:${isModuleDebugRun} taskIsAssemble:$taskIsAssemble, ${mainModuleName == project.name}"
+        //如何判断当前任务是 以application单独debug运行task的library
+        boolean isModuleDebugRun = !isMainApp(project) && taskIsAssemble && (mainModuleName == project.name)
+        println "addComponentDependencyMethod isModuleDebugRun:${isModuleDebugRun}, isMainApp：${isMainApp(project)}, taskIsAssemble:$taskIsAssemble," +
+                " mainModuleName:$mainModuleName, project.name:$project.name"+
+                " ${mainModuleName == project.name}"
         // 组件名字taskName
-        project.ext.addModule = { dependencyName, realDependency = null ->
-            if(isModuleDebugRun){
-                return
-            }
-            println "${dependencyName} "
-            def componentProject = project.rootProject.subprojects.find { it.name == dependencyName }
-            def dependencyMode = GradleVersion.version(project.gradle.gradleVersion) >= GradleVersion.version('4.1') ? 'api' : 'compile'
-            if (realDependency) {
-                //通过参数传递的依赖方式，如：
-                // project(':moduleName')
-                // 或
-                // 'com.billy.demo:demoA:1.1.0'
-                project.dependencies.add(dependencyMode, realDependency)
-                println "ModularizationPlugin 1>>>> $dependencyMode $realDependency to ${project.name}'s dependencies"
-            } else if (componentProject) {
-                //第二个参数未传，默认为按照module来进行依赖
-                project.dependencies.add(dependencyMode, project.project(":$dependencyName"))
-                println "ModularizationPlugin 2>>>> $dependencyMode project(\":$dependencyName\") to ${project.name}'s dependencies"
-            } else {
-                throw new RuntimeException(
-                        "ModularizationPlugin >>>> add dependency by [ addComponent '$dependencyName' ] occurred an error:" +
-                                "\n'$dependencyName' is not a module in current project" +
-                                " and the 2nd param is not specified for realDependency" +
-                                "\nPlease make sure the module name is '$dependencyName'" +
-                                "\nelse" +
-                                "\nyou can specify the real dependency via add the 2nd param, for example: " +
-                                "addComponent '$dependencyName', 'com.billy.demo:demoB:1.1.0'")
-            }
-        }
+//        project.ext.addModule = { dependencyName, realDependency = null ->
+//            if(isModuleDebugRun){
+//                return
+//            }
+//            println "${dependencyName} "
+//            def componentProject = project.rootProject.subprojects.find { it.name == dependencyName }
+//            def dependencyMode = GradleVersion.version(project.gradle.gradleVersion) >= GradleVersion.version('4.1') ? 'api' : 'compile'
+//            project.dependencies.add("api", project.project(":module_personalcenter"))
+//            if (realDependency) {// todo 这个没理解？
+//                //通过参数传递的依赖方式，如：
+//                // project(':moduleName')
+//                // 或
+//                // 'com.billy.demo:demoA:1.1.0'
+//                project.dependencies.add(dependencyMode, realDependency)
+//                println "ModularizationPlugin 1>>>> $dependencyMode $realDependency to ${project.name}'s dependencies"
+//            } else if (componentProject) {
+//                //第二个参数未传，默认为按照module来进行依赖
+//                project.dependencies.add(dependencyMode, project.project(":$dependencyName"))
+//                println "ModularizationPlugin 2>>>> $dependencyMode project(\":$dependencyName\") to ${project.name}'s dependencies"
+//            } else {
+//                throw new RuntimeException(
+//                        "ModularizationPlugin >>>> add dependency by [ addComponent '$dependencyName' ] occurred an error:" +
+//                                "\n'$dependencyName' is not a module in current project" +
+//                                " and the 2nd param is not specified for realDependency" +
+//                                "\nPlease make sure the module name is '$dependencyName'" +
+//                                "\nelse" +
+//                                "\nyou can specify the real dependency via add the 2nd param, for example: " +
+//                                "addComponent '$dependencyName', 'com.billy.demo:demoB:1.1.0'")
+//            }
+//        }
         //是否 需要把依赖添加 task
 
     }
