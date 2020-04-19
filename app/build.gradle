@@ -1,4 +1,5 @@
-apply plugin: 'com.android.application'
+ext.mainApp = true  //设置为true，表示此module为主app module，一直以application方式编译
+apply plugin: 'com.github.rpc.modularization'
 
 android {
     compileSdkVersion 29
@@ -21,6 +22,7 @@ android {
 
 }
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -29,5 +31,9 @@ dependencies {
     api app_dependencies.rpc_modularization
     api project(":module_login")
     api project(":module_topic")
-    api project(":module_personalcenter")
+//    if (!isDebugAlone.toBoolean()) {
+//        api project(":module_personalcenter")
+//        //addComponent 'module_personalcenter'
+//    }
+    addModule 'module_personalcenter'
 }

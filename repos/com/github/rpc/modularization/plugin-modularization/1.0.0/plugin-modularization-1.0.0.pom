@@ -5,4 +5,12 @@
   <groupId>com.github.rpc.modularization</groupId>
   <artifactId>plugin-modularization</artifactId>
   <version>1.0.0</version>
+  <dependencies>
+    <dependency>
+      <groupId>com.android.tools.build</groupId>
+      <artifactId>gradle</artifactId>
+      <version>3.6.1</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
 </project>

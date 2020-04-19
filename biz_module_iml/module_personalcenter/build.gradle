@@ -1,5 +1,5 @@
-apply plugin: 'com.android.library'
-apply plugin: 'modularization'
+//apply plugin: 'com.android.library'
+apply plugin: 'com.github.rpc.modularization'
 
 android {
     compileSdkVersion 29
@@ -10,7 +10,9 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        if (isDebugAlone.toBoolean()) {
+            applicationId 'com.github.rpc.module_personalcenter.run'
+        }
         consumerProguardFiles 'consumer-rules.pro'
     }
 

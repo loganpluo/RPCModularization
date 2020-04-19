@@ -12,10 +12,15 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation 'com.android.tools.build:gradle:3.6.1'
+}
+
 group='com.github.rpc.modularization'
 version='1.0.0'
 
 uploadArchives {
+    //todo 设置全局的 isDebugAlone=false ，
     repositories {
         mavenDeployer {
             //提交到远程服务器：

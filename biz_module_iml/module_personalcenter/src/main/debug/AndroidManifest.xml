@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.rpc.module_personalcenter">
+
+    <application
+        android:name=".MyApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/demo_a_ic_launcher"
+        android:label="@string/demo_a_app_name"
+        android:supportsRtl="true"
+        android:theme="@style/demo_a_AppTheme">
+        <activity android:name=".PersonalCenterTestActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
