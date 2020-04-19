@@ -72,8 +72,31 @@
 
 ```
 ## step2: 模块支持单独debug run (doing)
-addModule 'module_personalcenter' 插件脚本实现最后问题<br>
-app运行的时候，引入module_personalcenter模块；run module_personalcenter模块的时候，不引入module_personalcenter模块<br>
+```
+module_personalcenter模块为可以单独debug调试模块, 配置如下
+
+(1) 根目录gradle.properties 配置主工程名, plugin-modularization用来支持library可以run
+    mainAppName = app
+
+(2) app主工程的build.gradle ,把com.android.application替换成如下插件，能够动态依赖单独运行的模块
+    apply plugin: 'com.github.rpc.modularization'
+(3) app主工程的build.gradle, 动态添加业务实现模块(config阶段，)
+    addModule 'module_personalcenter'
+
+(4) module_personalcenter 模式支持单独debug调试 build.gradle 配置
+    apply plugin: 'com.github.rpc.modularization' 替换 apply plugin: 'com.android.library'
+
+(5) module_personalcenter 模式支持单独debug调试 gradle.properties 配置
+    isDebugAlone=true
+    moduleApplicationId=com.github.rpc.module_personalcenter.run
+
+(6) module_personalcenter 模式支持单独debug调试， 测试debug目录调试代码 todo 调用还有些问题
+    新建 src/main/debug 目录, 相当于个application工程目录
+    src/main/debug/java 新建对应包名，测试activity
+    src/main/debug/res 资源，主要加前缀module_personalcenter
+    src/main/debug/AndroidManifest.xml 同样的包名, 定义 application 和指定测试入口activity
+
+```
 
 ## step3: 模块接口实现支持自动注册(todo)
 

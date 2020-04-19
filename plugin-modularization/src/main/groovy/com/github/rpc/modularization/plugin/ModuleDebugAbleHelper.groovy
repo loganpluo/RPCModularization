@@ -27,7 +27,7 @@ class ModuleDebugAbleHelper {
     }
 
     static boolean isMainApp(Project project) {
-        return project.ext.has(MODULE_MAIN_APP) && project.ext.mainApp
+        return  mainAppName == project.name
     }
 
     //需要集成打包相关的task

@@ -1,6 +1,6 @@
 import java.util.regex.Pattern
 
-ext.mainApp = true  //设置为true，表示此module为主app module，一直以application方式编译
+//ext.mainApp = true  //设置为true，表示此module为主app module，一直以application方式编译
 apply plugin: 'com.github.rpc.modularization'
 
 android {
@@ -33,8 +33,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     api app_dependencies.rpc_modularization
 
-    api project(":module_login")
-    api project(":module_topic")
+    addModule 'module_login' //api project(":module_login")
+    addModule 'module_topic' //api project(":module_topic")
 
     addModule 'module_personalcenter'//暂时只支持这种写法，addModule project(":module_personalcenter") 这个也后面再支持
 
