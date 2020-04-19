@@ -1,6 +1,6 @@
 # RPCModularization
 
-![](https://github.com/loganpluo/RPCModularization/pic/模块暴露的服务.png)<br>
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/%E6%A8%A1%E5%9D%97%E6%9A%B4%E9%9C%B2%E7%9A%84%E6%9C%8D%E5%8A%A1.png)<br>
 &emsp;&emsp;&emsp;模块结构图(来自美团组件化)
 
 ## step1: 模块接口服务中心（done）
