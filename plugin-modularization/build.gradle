@@ -11,3 +11,19 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+group='com.github.rpc.modularization'
+version='1.0.0'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //提交到远程服务器：
+            // repository(url: "http://www.xxx.com/repos") {
+            //    authentication(userName: "admin", password: "admin")
+            // }
+            //本地的Maven地址设置为../repos
+            repository(url: uri('../repos'))
+        }
+    }
+}

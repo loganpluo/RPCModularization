@@ -11,13 +11,16 @@ ext{
 buildscript {
     
     repositories {
+        maven {//本地Maven仓库地址找自定义的插件 todo 后面放到远程maven
+            url uri('repos')
+        }
         maven{ url 'https://maven.aliyun.com/repository/google' }
         maven{ url'https://maven.aliyun.com/repository/jcenter'}
         
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.2'
-        
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -28,7 +31,6 @@ allprojects {
     repositories {
         maven{ url 'https://maven.aliyun.com/repository/google' }
         maven{ url'https://maven.aliyun.com/repository/jcenter'}
-        
     }
 }
 
