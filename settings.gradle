@@ -1,3 +1,4 @@
+println "settings.gradle reading..."
 rootProject.name='RPCModularization'
 include ':app'
 include ':rpc-modularization'

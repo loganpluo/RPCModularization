@@ -10,8 +10,12 @@ public class PersonalCenterModuleServiceImpl implements PersonalCenterModuleServ
     @Override
     public void goToMyTopicListPage(Context context) {
 
-        Intent intent = new Intent(context,MyTopicListActivity.class);
-        context.startActivity(intent);
+        try{
+            Intent intent = new Intent(context,MyTopicListActivity.class);
+            context.startActivity(intent);
+        }catch (Throwable throwable){
+            throwable.printStackTrace();
+        }
 
     }
 }

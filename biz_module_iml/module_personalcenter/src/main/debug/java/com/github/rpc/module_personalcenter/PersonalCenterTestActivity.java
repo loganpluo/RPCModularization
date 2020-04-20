@@ -18,7 +18,7 @@ public class PersonalCenterTestActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //todo fix
-//                RPCModuleServiceManager.findService(PersonalCenterModuleService.class).goToMyTopicListPage(PersonalCenterTestActivity.this);
+                RPCModuleServiceManager.findService(PersonalCenterModuleService.class).goToMyTopicListPage(PersonalCenterTestActivity.this);
             }
         });
     }

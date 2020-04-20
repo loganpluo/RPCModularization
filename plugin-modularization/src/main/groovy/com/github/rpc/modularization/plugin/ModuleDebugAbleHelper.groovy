@@ -84,6 +84,7 @@ class ModuleDebugAbleHelper {
         boolean isMainAppBuild = isMainAppBuild(mainTaskName)
         println "mainModuleName:$mainTaskName, isMainAppBuild:$isMainAppBuild"
         if (!isDebugAlone || isMainAppBuild) {//非可单独编译 或者 如果是app主工程编译任务 则 都为library
+            //todo 还需要剔除调模块打包的情况
             project.apply plugin: 'com.android.library'
             return
         }
@@ -97,8 +98,8 @@ class ModuleDebugAbleHelper {
 
         project.android.sourceSets.main {
             //run模式下，如果存在src/main/debug/AndroidManifest.xml，则自动使用其作为manifest文件
-            def debugManifest = "${DEBUG_DIR}AndroidManifest.xml"
-            println "debugManifest"
+            def debugManifest = getDebugMergeManifest(project)//"${DEBUG_DIR}AndroidManifest.xml"
+            println "debugManifest getDebugMergeManifest $debugManifest"
             if (project.file(debugManifest).exists()) {
                 manifest.srcFile debugManifest
             }
@@ -116,6 +117,16 @@ class ModuleDebugAbleHelper {
             }
         }
 
+    }
+
+    static String getDebugMergeManifest(Project project){
+//        def debugManifest = "${DEBUG_DIR}AndroidManifest.xml"
+//        println "debugManifest"
+//        if (project.file(debugManifest).exists()) {
+//            manifest.srcFile debugMergeManifest
+//        }
+        //todo merge 操作
+        return "src/main/debug/build/AndroidManifest.xml"
     }
 
     /**
