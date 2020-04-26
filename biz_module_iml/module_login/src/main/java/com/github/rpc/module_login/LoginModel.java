@@ -10,7 +10,7 @@ public class LoginModel implements RPCModule {
     @Override
     public void onInit(Context context) {
         //todo 自动注册
-        RPCModuleServiceManager.getInstance().registerService(LoginModuleService.class, new LoginModuleServiceImpl());
+        RPCModuleServiceManager.getInstance().registerService(LoginModuleService.class, LoginModuleServiceImpl.class);
 
     }
 }

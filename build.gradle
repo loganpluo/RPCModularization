@@ -1,11 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
+println("project luopeng gradle")
 ext{
 
     app_dependencies = [
        rpc_modularization: project(':rpc-modularization')
     ]
-
+    isSupportDebugLibrary = false
 }
 
 buildscript {

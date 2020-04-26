@@ -1,6 +1,8 @@
-//apply plugin: 'com.android.library'
-apply plugin: 'com.github.rpc.modularization'
-
+if(isSupportDebugLibrary){
+    apply plugin: 'com.github.rpc.modularization'
+}else{
+    apply plugin: 'com.android.library'
+}
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
