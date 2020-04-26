@@ -16,7 +16,9 @@ class ModularizationPlugin implements Plugin<Project> {
 //        // 注册Transform，其实就是添加了Task
 //        android.registerTransform(new FirstInjectTransform(project))
         android.registerTransform(new InjectTransform(project))
+        project.afterEvaluate {
 
+        }
 
     }
 }

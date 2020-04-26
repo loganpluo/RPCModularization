@@ -63,7 +63,7 @@ class InjectTransform extends Transform {
         def startTs = System.currentTimeMillis()
         println "-------------------- ${getName()} transform 开始-------------------"
 
-        println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifyType.InterfaceModuleInit.getValue()}"
+        println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.getValue()}"
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each {
             TransformInput input ->

@@ -1,8 +1,8 @@
 package com.github.rpc.modularization.plugin
 
-class ClassModifyInfo {
+class ClassModifierConfig {
 
-    ClassModifyType type;
+    String type;//对应ClassModifierType.type
     String scanInterface;
     String scanAnnotation;
     String codeInsertToClass;
@@ -11,10 +11,5 @@ class ClassModifyInfo {
     String callMethodName;
     String callMethodParams;
     ArrayList<String> exclude;
-
-    File codeInsertToClassFile;
-    Set<String> classList;
-
-    ICodeGenerator codeGenerator;
 
 }
