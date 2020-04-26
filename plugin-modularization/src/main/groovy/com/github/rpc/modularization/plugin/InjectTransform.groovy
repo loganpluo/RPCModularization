@@ -63,7 +63,7 @@ class InjectTransform extends Transform {
         def startTs = System.currentTimeMillis()
         println "-------------------- ${getName()} transform 开始-------------------"
 
-        println "inputs.size: ${inputs.size()}"
+        println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifyType.InterfaceModuleInit.getValue()}"
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each {
             TransformInput input ->
@@ -72,7 +72,9 @@ class InjectTransform extends Transform {
                 input.directoryInputs.each {
                     DirectoryInput directoryInput ->
 //                        // 注入代码
-                        MyInjectByJavassit.injectToast(directoryInput.file.absolutePath, mProject)
+                        println("MyInjectByJavassit injectToast start absolutePath:${directoryInput.file.absolutePath}")
+//                        MyInjectByJavassit.injectToast(directoryInput.file.absolutePath, mProject)
+                        ScanHelper.scanDirectory(directoryInput.file.absolutePath, mProject)
 
                         // 获取输出目录
                         def dest = outputProvider.getContentLocation(directoryInput.name,
@@ -99,7 +101,9 @@ class InjectTransform extends Transform {
                         }
                         def dest = outputProvider.getContentLocation(jarName + md5Name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
 
-                        println("jar jarInput：${jarInput.file.absolutePath} output dest: $dest.absolutePath")
+                        println("jar jarInput：${jarInput.file.absolutePath} " +
+                                "output jarName:$jarName, md5Name:$md5Name, dest: $dest.absolutePath")
+
                         FileUtils.copyFile(jarInput.file, dest)
                 }
         }

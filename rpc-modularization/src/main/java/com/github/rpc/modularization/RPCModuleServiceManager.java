@@ -1,5 +1,7 @@
 package com.github.rpc.modularization;
 
+import android.content.Context;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,14 +15,44 @@ public class RPCModuleServiceManager {
         return RPCServiceManagerHolder.INSTANCE;
     }
 
-    private Map<String, Class<? extends RPCModuleService>> allServicesDictionary;
-    private Map<String, RPCModuleService> allInstanceDictionary;
+    private Map<String, Class<?>> allServicesDictionary;
+    private Map<String, Object> allInstanceDictionary;
 
     private RPCModuleServiceManager() {
         allServicesDictionary = new HashMap<>();
         allInstanceDictionary = new HashMap<>();
     }
 
+    public static void init(Context context){
+        initModules(context);
+        initModuleServices();
+    }
+
+    public static void initModules(Context context){
+        //initModule(context,new LoginModuleImpl());
+        //
+    }
+
+    public static void initModuleServices(){
+        //registerModuleService(LoginModuleServiceImpl.class);
+    }
+
+    private static void initModule(Context context, RPCModule rpcModule){
+        rpcModule.onInit(context);
+    }
+
+    private static void registerModuleService(Class<?> serviceImpl){
+        Class<?>[] serviceInterfaces = serviceImpl.getInterfaces();
+        getInstance().registerModuleService(serviceInterfaces[0], serviceImpl);
+    }
+
+    private void registerModuleService(Class serviceApiClass, Class<?> serviceImplClass){
+        allInstanceDictionary.put(getServiceKey(serviceApiClass), serviceImplClass);
+    }
+
+    private String getServiceKey(Class serviceApiClass){
+        return serviceApiClass.getName();
+    }
 
     /**
      * 注册服务实例
@@ -28,8 +60,8 @@ public class RPCModuleServiceManager {
      * @param service  实例协议描述
      * @param instance 服务实例对象
      */
-    public void registerService(Class<? extends RPCModuleService> service, RPCModuleService instance) {
-        allInstanceDictionary.put(service.getSimpleName(), instance);
+    public void registerService(Class<?> service, Object instance) {
+        allInstanceDictionary.put(getServiceKey(service), instance);
     }
 
     /**
@@ -38,8 +70,8 @@ public class RPCModuleServiceManager {
      * @param service   实例协议描述
      * @param implClass 服务实例类
      */
-    public void registerService(Class<? extends RPCModuleService> service, Class<? extends RPCModuleService> implClass) {
-        allServicesDictionary.put(service.getSimpleName(), implClass);
+    public void registerService(Class<? extends Object> service, Class<? extends Object> implClass) {
+        allServicesDictionary.put(getServiceKey(service), implClass);
     }
 
     /**
@@ -47,9 +79,9 @@ public class RPCModuleServiceManager {
      *
      * @param service 实例协议描述
      */
-    public void unregisterService(Class<? extends RPCModuleService> service) {
-        allInstanceDictionary.remove(service.getSimpleName());
-        allServicesDictionary.remove(service.getSimpleName());
+    public void unregisterService(Class<? extends Object> service) {
+        allInstanceDictionary.remove(getServiceKey(service));
+        allServicesDictionary.remove(getServiceKey(service));
     }
 
     /**
@@ -59,20 +91,20 @@ public class RPCModuleServiceManager {
      * @param service           实例协议描述
      * @return 创建的服务实例或者nil
      */
-    public static <ModuleService extends RPCModuleService> ModuleService findService(Class<ModuleService> service) {
+    public static <ModuleService extends Object> ModuleService findService(Class<ModuleService> service) {
         return RPCModuleServiceManager.getInstance().innerFindService(service);
     }
 
 
-    private <ModuleService extends RPCModuleService> ModuleService innerFindService(Class<ModuleService> service) {
+    private <ModuleService extends Object> ModuleService innerFindService(Class<ModuleService> service) {
 
-        String serviceName = service.getSimpleName();
-        RPCModuleService serviceInstance = allInstanceDictionary.get(serviceName);
+        String serviceName = getServiceKey(service);
+        Object serviceInstance = allInstanceDictionary.get(serviceName);
         if (serviceInstance != null) {
             return (ModuleService) serviceInstance;
         }
 
-        Class<? extends RPCModuleService> serviceImpl = allServicesDictionary.get(serviceName);
+        Class<? extends Object> serviceImpl = allServicesDictionary.get(serviceName);
         if (serviceImpl == null) {
             return null;
         }
