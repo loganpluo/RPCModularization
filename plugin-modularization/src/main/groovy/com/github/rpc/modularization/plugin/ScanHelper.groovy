@@ -1,5 +1,6 @@
 package com.github.rpc.modularization.plugin
 
+import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
@@ -164,6 +165,7 @@ class ScanHelper {
         private String destFile
         private def found = false
         private ClassModifier[] classModifierList;
+        private String annotationDesc;
 
         ScanClassVisitor(int api,
                          ClassVisitor cv,
@@ -194,15 +196,22 @@ class ScanHelper {
             ) {
                 return
             }
-            LogUtil.d(TAG,"visit name:$name, signature:$signature, superName:$superName," +
+            LogUtil.d(TAG,"visit name:$name, annotationDesc:$annotationDesc," +
+                    "signature:$signature, superName:$superName," +
                     " sourcefilePath:$filePath, destFile:$destFile")
             classModifierList.each {
                 it.recordClassModifierTarget(this.destFile,
                                              version,
-                                              access, name, signature, superName, interfaces)
+                                             access, name, signature, superName, interfaces)
             }
         }
 
+        @Override
+        AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            LogUtil.d(TAG,"visitAnnotation desc:$desc")
+            annotationDesc = desc
+            return super.visitAnnotation(desc, visible)
+        }
     }
 
 }

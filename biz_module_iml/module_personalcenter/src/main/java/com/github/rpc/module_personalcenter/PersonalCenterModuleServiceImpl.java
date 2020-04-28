@@ -3,8 +3,10 @@ package com.github.rpc.module_personalcenter;
 import android.content.Context;
 import android.content.Intent;
 
+import com.github.rpc.modularization.ModuleService;
 import com.github.rpc.module_personalcenter_api.PersonalCenterModuleService;
 
+@ModuleService
 public class PersonalCenterModuleServiceImpl implements PersonalCenterModuleService {
 
     @Override

@@ -1,8 +1,10 @@
 package com.github.rpc.module_login;
 
+import com.github.rpc.modularization.ModuleService;
 import com.github.rpc.module_login_api.LoginModuleService;
 import com.github.rpc.module_login_api.Session;
 
+@ModuleService
 public class LoginModuleServiceImpl implements LoginModuleService {
     @Override
     public boolean isLogin() {

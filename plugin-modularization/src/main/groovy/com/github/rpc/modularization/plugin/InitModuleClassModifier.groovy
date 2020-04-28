@@ -28,37 +28,6 @@ class InitModuleClassModifier extends ClassModifier {
      }
 
      @Override
-     void parse(Map<String, Object> config) {
-         classModifierConfig.type = ClassModifierType.InterfaceModuleInit.type
-         classModifierConfig.scanInterface = config.get("scanInterface") ?
-                                            convertDotToSlash(config.get("scanInterface")) : ""
-
-         classModifierConfig.codeInsertToClass = config.get("codeInsertToClass") ?
-                                            convertDotToSlash(config.get("codeInsertToClass")) : ""
-
-         classModifierConfig.codeInsertToMethod = config.get("codeInsertToMethod") ?
-                                                  config.get("codeInsertToMethod") : ""
-
-         //todo 多个参数支持
-         String codeInsertToMethodParams = config.get("codeInsertToMethodParams") ?
-                                           convertDotToSlash(config.get("codeInsertToMethodParams")) : ""
-         classModifierConfig.codeInsertToMethodParams = codeInsertToMethodParams
-
-         classModifierConfig.callMethodName = config.get("callMethodName") ?
-                                 config.get("callMethodName") : ""
-         //todo 多个参数支持
-         //android.content.Context,com.github.rpc.modularization.RPCModule
-         classModifierConfig.callMethodParams = config.get("callMethodParams") ?
-                                   convertDotToSlash(config.get("callMethodParams")) : ""
-
-         //todo 提出
-         ArrayList<String> exclude;
-
-         LogUtil.i(TAG,"parse classModifierConfig:$classModifierConfig")
-
-     }
-
-     @Override
      ICodeGenerator getICodeGenerator() {
          return new InitModuleCodeGenerator()
      }

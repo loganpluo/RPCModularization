@@ -1,5 +1,6 @@
 package com.github.rpc.module_topic;
 
+import com.github.rpc.modularization.ModuleService;
 import com.github.rpc.modularization.RPCModuleServiceManager;
 import com.github.rpc.module_login_api.LoginModuleService;
 import com.github.rpc.module_topic_api.GetMyTopicListCallBack;
@@ -9,6 +10,7 @@ import com.github.rpc.module_topic_api.TopicModuleService;
 import java.util.ArrayList;
 import java.util.List;
 
+@ModuleService
 public class TopicModuleServiceImpl implements TopicModuleService {
 
     @Override

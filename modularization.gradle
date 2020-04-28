@@ -14,5 +14,15 @@ classmodifier{
           , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
             ]
         ],
+        [ //自动注册组件
+          'type'             : 'AnnotationModuleAutoRegister',
+          'scanAnnotation'   : 'com.github.rpc.modularization.ModuleService'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModuleServices'
+          , 'callMethodName'      : 'registerModuleService'
+          , 'callMethodParams': 'java.lang.Class'
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+        ]
+        ]
     ]
 }
