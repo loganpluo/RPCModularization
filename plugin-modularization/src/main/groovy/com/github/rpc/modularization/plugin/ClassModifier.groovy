@@ -9,9 +9,6 @@ abstract class ClassModifier {
     File codeInsertToClassFile;
     Set<String> classList = new HashSet<>();
 
-    abstract boolean isTargetCodeInsertToClassFile(File file)
-
-    abstract boolean isSetClassFile(File file)
 
     /**
      * 记录被修改的 codeInsertToClassFile

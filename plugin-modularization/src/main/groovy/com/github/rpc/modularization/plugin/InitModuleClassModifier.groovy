@@ -6,20 +6,6 @@ class InitModuleClassModifier extends ClassModifier {
      private static final TAG = "InitModuleClassModifier"
 
      @Override
-     boolean isTargetCodeInsertToClassFile(File file) {
-         //com.github.rpc.modularization.RPCModuleServiceManager
-         //todo 动态获取
-         return "RPCModuleServiceManager" == file.getName()
-     }
-
-     @Override
-     boolean isSetClassFile(File file){
-         //classModifierConfig.scanInterface com/github/rpc.modularization/RPCModule
-        return "RPCModule" == file.getName()
-     }
-
-
-     @Override
      boolean recordClassModifierTarget(String destFile,
                                     int version, int access, String name,
                                     String signature, String superName, String[] interfaces) {
