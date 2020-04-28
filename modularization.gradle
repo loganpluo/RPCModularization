@@ -1,0 +1,18 @@
+apply plugin: 'com.github.rpc.modularization'
+
+
+classmodifier{
+    configs = [
+        [ //自动注册组件
+          'type'             : 'InterfaceModuleInit',
+          'scanInterface'             : 'com.github.rpc.modularization.RPCModule'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModules'
+          , 'codeInsertToMethodParams': 'android.content.Context'
+          , 'callMethodName'      : 'initModule'
+          , 'callMethodParams': 'android.content.Context;com.github.rpc.modularization.RPCModule'
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+            ]
+        ],
+    ]
+}

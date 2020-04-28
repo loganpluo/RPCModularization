@@ -7,7 +7,7 @@ if(isSupportDebugLibrary){
 }else{
     apply plugin: 'com.android.application'
 }
-apply plugin: 'com.github.rpc.modularization'
+apply from: rootProject.file('modularization.gradle')
 
 
 android {

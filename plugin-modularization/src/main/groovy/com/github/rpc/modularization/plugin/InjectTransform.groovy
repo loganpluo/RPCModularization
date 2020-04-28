@@ -7,6 +7,7 @@ import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
+import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
 import org.gradle.api.Project
 import com.android.build.gradle.internal.pipeline.TransformManager
@@ -19,7 +20,10 @@ import org.apache.commons.io.FileUtils
  */
 class InjectTransform extends Transform {
 
+    private static String TAG = "InjectTransform"
+
     private Project mProject
+    ClassModifierExtension extension;
 
     // 构造函数，我们将Project保存下来备用
     InjectTransform(Project project) {
@@ -61,24 +65,33 @@ class InjectTransform extends Transform {
                    Collection<TransformInput> referencedInputs, TransformOutputProvider outputProvider,
                    boolean isIncremental) throws IOException, TransformException, InterruptedException {
         def startTs = System.currentTimeMillis()
-        println "-------------------- ${getName()} transform 开始-------------------"
+        extension.loadConfig()
+        println "-------------------- ${getName()} transform 开始 isIncremental：${isIncremental}-------------------"
 
-        println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.getValue()}"
+        //每次得到 List<ClassModifier>
+
+        println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.type}"
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
+        // 找到
+        LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
         inputs.each {
             TransformInput input ->
                 // 遍历文件夹
                 //文件夹里面包含的是我们手写的类以及R.class、BuildConfig.class以及R$XXX.class等
+                //directoryInput.changedFiles.isEmpty() 这个是不是增量
+                LogUtil.i(TAG,"directoryInputs.changedFiles.isEmpty: ${input.directoryInputs.changedFiles.isEmpty()}")
                 input.directoryInputs.each {
                     DirectoryInput directoryInput ->
 //                        // 注入代码
-                        println("MyInjectByJavassit injectToast start absolutePath:${directoryInput.file.absolutePath}")
-//                        MyInjectByJavassit.injectToast(directoryInput.file.absolutePath, mProject)
-                        ScanHelper.scanDirectory(directoryInput.file.absolutePath, mProject)
+                        LogUtil.d(TAG,"scanDirectory absolutePath:${directoryInput.file.absolutePath}")
 
                         // 获取输出目录
                         def dest = outputProvider.getContentLocation(directoryInput.name,
                                 directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
+
+                        ScanHelper.scanDirectory(directoryInput.file.absolutePath,
+                                                mProject, extension.classModifiers,
+                                                dest)
 
                         println("directory inputname:${directoryInput.file.absolutePath}" +
 //                                " inputType.contentTypes:${directoryInput.contentTypes}" +
@@ -101,13 +114,28 @@ class InjectTransform extends Transform {
                         }
                         def dest = outputProvider.getContentLocation(jarName + md5Name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
 
+                        ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
+
                         println("jar jarInput：${jarInput.file.absolutePath} " +
                                 "output jarName:$jarName, md5Name:$md5Name, dest: $dest.absolutePath")
 
                         FileUtils.copyFile(jarInput.file, dest)
                 }
         }
+
+        extension.classModifiers.each {
+            InsertCodeHelper.insertInitCodeTo(it)
+        }
+
         long cost = System.currentTimeMillis() - startTs
         println "--------------------- ${getName()} transform cost:$cost 结束-------------------"
+    }
+
+    @Override
+    void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+        println "-------------------- ${getName()} transform(TransformInvocation transformInvocation) 开始-------------------"
+        super.transform(transformInvocation)
+        //写个文件把
+        println "-------------------- ${getName()} transform(TransformInvocation transformInvocation) 结束-------------------"
     }
 }
