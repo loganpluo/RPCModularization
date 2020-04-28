@@ -1,5 +1,7 @@
 package com.github.rpc.modularization.plugin
 
+import org.objectweb.asm.MethodVisitor
+
 abstract class ClassModifier {
 
     ClassModifierConfig classModifierConfig = new ClassModifierConfig()
