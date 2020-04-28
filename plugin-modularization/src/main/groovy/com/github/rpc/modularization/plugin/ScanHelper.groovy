@@ -166,6 +166,7 @@ class ScanHelper {
         private def found = false
         private ClassModifier[] classModifierList;
         private String annotationDesc;
+        private ClassInfo classInfo = new ClassInfo()
 
         ScanClassVisitor(int api,
                          ClassVisitor cv,
@@ -199,17 +200,28 @@ class ScanHelper {
             LogUtil.d(TAG,"visit name:$name, annotationDesc:$annotationDesc," +
                     "signature:$signature, superName:$superName," +
                     " sourcefilePath:$filePath, destFile:$destFile")
+
+            classInfo.destFilePath = destFile
+            classInfo.version = version
+            classInfo.access = access
+            classInfo.name = name
+            classInfo.signature = signature
+            classInfo.superName = superName
+            classInfo.interfaces = interfaces
+            LogUtil.d(TAG,"visit classInfo:$classInfo, classInfo.name:${classInfo.name}")
             classModifierList.each {
-                it.recordClassModifierTarget(this.destFile,
-                                             version,
-                                             access, name, signature, superName, interfaces)
+                it.recordClassModifierTarget(classInfo)
             }
         }
 
         @Override
         AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            LogUtil.d(TAG,"visitAnnotation desc:$desc")
-            annotationDesc = desc
+            LogUtil.d(TAG,"visitAnnotation classInfo.name:${classInfo.name} classInfo${classInfo} desc:$desc sourcefilePath:$filePath, destFile:$destFile")
+            classInfo.annotationDesc = desc
+            classModifierList.each {
+                it.recordClassModifierTarget(classInfo)
+            }
+
             return super.visitAnnotation(desc, visible)
         }
     }

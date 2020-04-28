@@ -9,14 +9,15 @@ abstract class ClassModifier {
     File codeInsertToClassFile;
     Set<String> classList = new HashSet<>();
 
+     boolean isNeedScanAnnotation(){
+         return false
+     }
 
     /**
      * 记录被修改的 codeInsertToClassFile
      * 被注册的类 classList
      */
-    abstract boolean recordClassModifierTarget(String destFile,
-                                            int version, int access, String name,
-                                            String signature, String superName, String[] interfaces)
+    abstract boolean recordClassModifierTarget(ClassInfo classInfo)
 
 
 

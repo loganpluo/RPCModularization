@@ -6,10 +6,12 @@ class InitModuleClassModifier extends ClassModifier {
      private static final TAG = "InitModuleClassModifier"
 
      @Override
-     boolean recordClassModifierTarget(String destFile,
-                                    int version, int access, String name,
-                                    String signature, String superName, String[] interfaces) {
-         LogUtil.d(TAG,"recordClassModifierTarget name:$name, signature:$signature, superName:$superName")
+     boolean recordClassModifierTarget(ClassInfo classInfo) {
+
+         String destFile = classInfo.destFilePath
+         String name = classInfo.name
+         String[] interfaces = classInfo.interfaces
+         LogUtil.d(TAG,"recordClassModifierTarget name:$name")
          def result = false
          if("com/github/rpc/modularization/RPCModuleServiceManager" == name){
              codeInsertToClassFile = new File(destFile)

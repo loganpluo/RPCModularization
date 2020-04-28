@@ -1,11 +1,14 @@
 package com.github.rpc.modularization;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RPCModuleServiceManager {
+
+    private static final String TAG = "RPCModuleServiceManager";
 
     private static class RPCServiceManagerHolder {
         private static final RPCModuleServiceManager INSTANCE = new RPCModuleServiceManager();
@@ -44,6 +47,7 @@ public class RPCModuleServiceManager {
     private static void registerModuleService(Class<?> serviceImpl){
         Class<?>[] serviceInterfaces = serviceImpl.getInterfaces();
         getInstance().registerModuleService(serviceInterfaces[0], serviceImpl);
+        Log.i(TAG,"registerModuleService serviceImpl:"+serviceImpl.getName());
     }
 
     private void registerModuleService(Class serviceApiClass, Class<?> serviceImplClass){

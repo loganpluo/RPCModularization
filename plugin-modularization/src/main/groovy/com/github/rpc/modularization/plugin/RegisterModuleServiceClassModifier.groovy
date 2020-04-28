@@ -5,9 +5,15 @@ class RegisterModuleServiceClassModifier extends ClassModifier {
     private static final String TAG = "RegisterModuleServiceClassModifier"
 
     @Override
-    boolean recordClassModifierTarget(String destFile,
-                                   int version, int access, String name,
-                                   String signature, String superName, String[] interfaces) {
+    boolean isNeedScanAnnotation() {
+        return true
+    }
+
+    @Override
+    boolean recordClassModifierTarget(ClassInfo classInfo) {
+        String destFile = classInfo.destFilePath
+        String name = classInfo.name
+        LogUtil.d(TAG,"recordClassModifierTarget")
         //识别 被修改的class
         if("com/github/rpc/modularization/RPCModuleServiceManager" == name){
             codeInsertToClassFile = new File(destFile)
@@ -17,7 +23,9 @@ class RegisterModuleServiceClassModifier extends ClassModifier {
 
 
         //识别出注解@ModuleService 注解的实现serviceimpl
-        //
+        if("Lcom/github/rpc/modularization/ModuleService;" == classInfo.annotationDesc){
+            classList.add(name)
+        }
 
         return false
     }
