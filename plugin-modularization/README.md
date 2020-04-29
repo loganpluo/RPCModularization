@@ -1,4 +1,5 @@
 ### 插件工程结构
+```
 src/main/groovy/com.github.rpc.modularization.plugin
     ModularizationPlugin.groovy --插件入口类
     InjectTransform.groovy -- transform api 
@@ -8,7 +9,8 @@ src/main/groovy/com.github.rpc.modularization.plugin
     InitModuleCodeGenerator.groovy -- 模块初始化字节码插入代码类，把需要注入的class，到被修改的class的方法里面
     RegisterModuleServiceClassModifier.groovy -- 模块接口服务绑定字节码修改处理类，得到被修改的class 和 需要注入的class
     RegisterModuleServiceCodeGenerator.groovy -- 模模块接口服务绑定字节码插入代码处理类，把需要注入的class，到被修改的class的方法里面
-    
+```
+
 ### 插件开发
 ```
 step1 根目录 build.gradle plugin-modularization插件修改成本地仓库引用
