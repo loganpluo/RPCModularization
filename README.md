@@ -7,6 +7,18 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
 ## step1: 模块接口服务中心，支持自动注册（done）
 ```
+    //根目录build.gradle引入 自动化注册的插件
+    buildscript {
+     dependencies {
+            classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
+      }    
+    }
+
+    
+    // app/build.gradle引入modularization.gradle 配置，实现
+    apply from: rootProject.file('modularization.gradle')
+    
+
     // 暂时手动初始化模块
     public class MyApplication extends Application {
 
