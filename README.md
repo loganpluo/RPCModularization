@@ -2,7 +2,7 @@
 * 模块结构图(来自美团组件化)
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
 <br>
-和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html 
+和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
 RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
 ## step1: 模块接口服务中心，支持自动注册（done）
