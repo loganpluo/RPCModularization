@@ -1,6 +1,5 @@
 # RPCModularization
 * 模块结构图(来自美团组件化)
-! [text ] ( /pic/module-service.png)
 <br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
 <br>
