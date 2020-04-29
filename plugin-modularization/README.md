@@ -2,7 +2,8 @@
 ```
 
 @ModuleService
-    public class TopicModuleServiceImpl implements TopicModuleService {
+public class TopicModuleServiceImpl implements TopicModuleService {
+
 }
 
 public class TopicModule implements RPCModule {
