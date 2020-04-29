@@ -1,5 +1,30 @@
 ### 插件实现的功能
+```
 
+@ModuleService
+    public class TopicModuleServiceImpl implements TopicModuleService {
+}
+
+public class TopicModule implements RPCModule {
+    @Override
+    public void onInit(Context context) {
+        
+    }
+}
+
+// 插件收利用transform接口 集到 上面的注解@ModuleService类、 继承RPCModule接口的类， 
+// 利用asm 注册到RPCModuleServiceManager.java的占位的方法，如下
+public class RPCModuleServiceManager {
+    public static void initModules(Context context){//占位的方法
+        initModule(context,new LoginModule());// asm修改注入的code，实现模块初始化
+    }
+
+    public static void initModuleServices(){
+        registerModuleService(LoginModuleServiceImpl.class);// asm修改注入的code，实现接口 和 实现类的绑定
+    }    
+}
+
+```
 
 ### 插件工程结构
 ```
