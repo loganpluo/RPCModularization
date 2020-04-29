@@ -41,6 +41,8 @@ step4 asm编写修改字节码的指令，api和最后字节码结构一一对�
 例如 RegisterModuleServiceCodeGenerator 
 可参考指引：https://blog.csdn.net/ouyang_peng/article/details/100566678
 
+java类型签名 https://www.jianshu.com/p/a1438b476e82
+
 step5 build里面可以查看 执行 plugin-modularization的log （warn： 有时候又查看不到，clean又不行好奇怪）
 
 step6 反编译apk里面的dex 成class
