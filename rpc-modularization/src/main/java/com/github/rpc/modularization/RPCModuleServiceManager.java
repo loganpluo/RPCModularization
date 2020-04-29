@@ -18,12 +18,12 @@ public class RPCModuleServiceManager {
         return RPCServiceManagerHolder.INSTANCE;
     }
 
-    private Map<String, Class<?>> allServicesDictionary;
-    private Map<String, Object> allInstanceDictionary;
+    private Map<String, Class<?>> allApiServicesDictionary;// 服务接口class.name - 实现服务的class映射表
+    private Map<String, Object> allSingleInstanceDictionary;// 全局单利服务
 
     private RPCModuleServiceManager() {
-        allServicesDictionary = new HashMap<>();
-        allInstanceDictionary = new HashMap<>();
+        allApiServicesDictionary = new HashMap<>();
+        allSingleInstanceDictionary = new HashMap<>();
     }
 
     public static void init(Context context){
@@ -32,12 +32,9 @@ public class RPCModuleServiceManager {
     }
 
     public static void initModules(Context context){
-        //initModule(context,new LoginModuleImpl());
-        //
     }
 
     public static void initModuleServices(){
-        //registerModuleService(LoginModuleServiceImpl.class);
     }
 
     private static void initModule(Context context, RPCModule rpcModule){
@@ -51,7 +48,7 @@ public class RPCModuleServiceManager {
     }
 
     private void registerModuleService(Class serviceApiClass, Class<?> serviceImplClass){
-        allInstanceDictionary.put(getServiceKey(serviceApiClass), serviceImplClass);
+        allApiServicesDictionary.put(getServiceKey(serviceApiClass), serviceImplClass);
     }
 
     private String getServiceKey(Class serviceApiClass){
@@ -65,7 +62,7 @@ public class RPCModuleServiceManager {
      * @param instance 服务实例对象
      */
     public void registerService(Class<?> service, Object instance) {
-        allInstanceDictionary.put(getServiceKey(service), instance);
+        allSingleInstanceDictionary.put(getServiceKey(service), instance);
     }
 
     /**
@@ -74,8 +71,8 @@ public class RPCModuleServiceManager {
      * @param service   实例协议描述
      * @param implClass 服务实例类
      */
-    public void registerService(Class<? extends Object> service, Class<? extends Object> implClass) {
-        allServicesDictionary.put(getServiceKey(service), implClass);
+    public void registerService(Class<?> service, Class<?> implClass) {
+        allApiServicesDictionary.put(getServiceKey(service), implClass);
     }
 
     /**
@@ -83,40 +80,60 @@ public class RPCModuleServiceManager {
      *
      * @param service 实例协议描述
      */
-    public void unregisterService(Class<? extends Object> service) {
-        allInstanceDictionary.remove(getServiceKey(service));
-        allServicesDictionary.remove(getServiceKey(service));
+    public void unregisterService(Class<?> service) {
+        allSingleInstanceDictionary.remove(getServiceKey(service));
+        allApiServicesDictionary.remove(getServiceKey(service));
     }
 
-    /**
-     * 方便的服务查找接口，不用先调用{@link RPCModuleServiceManager#getInstance}取得实例，参数具体描述见{@link RPCModuleServiceManager#findService}
-     *
-     * @param <ModuleService> 服务协议类型
-     * @param service           实例协议描述
-     * @return 创建的服务实例或者nil
-     */
-    public static <ModuleService extends Object> ModuleService findService(Class<ModuleService> service) {
-        return RPCModuleServiceManager.getInstance().innerFindService(service);
+    public void unregisterSingleInstanceService(Class<?> service) {
+        allSingleInstanceDictionary.remove(getServiceKey(service));
+    }
+
+    public static <ModuleService> ModuleService findService(Class<ModuleService> service) {
+        return findService(service, ModuleServiceType.New);
     }
 
 
-    private <ModuleService extends Object> ModuleService innerFindService(Class<ModuleService> service) {
+    public static <ModuleService> ModuleService findService(Class<ModuleService> service,
+                                                                           ModuleServiceType moduleServiceType) {
+        return RPCModuleServiceManager.getInstance().innerFindService(service, moduleServiceType);
+    }
+
+    public  <ModuleService> ModuleService innerFindService(Class<ModuleService> service,
+                                                           ModuleServiceType moduleServiceType) {
+        if(moduleServiceType == ModuleServiceType.SingleInstance){
+            return RPCModuleServiceManager.getInstance().innerFindSingleInstanceService(service);
+        }
+
+        return RPCModuleServiceManager.getInstance().innerFindSingleInstanceService(service);
+    }
+
+    private <ModuleService> ModuleService innerFindSingleInstanceService(Class<ModuleService> service) {
 
         String serviceName = getServiceKey(service);
-        Object serviceInstance = allInstanceDictionary.get(serviceName);
+        Object serviceInstance = allSingleInstanceDictionary.get(serviceName);
         if (serviceInstance != null) {
             return (ModuleService) serviceInstance;
         }
 
-        Class<? extends Object> serviceImpl = allServicesDictionary.get(serviceName);
+        Object serviceImpl =  innerFindNewService(service);
+        if(serviceImpl != null){
+            allSingleInstanceDictionary.put(serviceName,serviceImpl);
+        }
+        return (ModuleService) serviceImpl;
+    }
+
+    private <ModuleService> ModuleService innerFindNewService(Class<ModuleService> service) {
+
+        String serviceName = getServiceKey(service);
+        Class<?> serviceImpl = allApiServicesDictionary.get(serviceName);
         if (serviceImpl == null) {
             return null;
         }
 
 
         try {
-            serviceInstance = serviceImpl.newInstance();
-            return (ModuleService) serviceInstance;
+            return (ModuleService) serviceImpl.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
