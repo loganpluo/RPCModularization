@@ -3,7 +3,8 @@
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/%E6%A8%A1%E5%9D%97%E6%9A%B4%E9%9C%B2%E7%9A%84%E6%9C%8D%E5%8A%A1.png)<br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;;&emsp;&emsp;&emsp;&emsp;模块结构图(来自美团组件化)
 
-## step1: 模块接口服务中心,字节码修改自动注入模块初始化和接口服务绑定代码（done）
+## step1: 模块接口服务中心，支持自动注册（done）
+### 字节码修改自动注入模块初始化和接口服务绑定代码
 ```
     // 暂时手动初始化模块
     public class MyApplication extends Application {
