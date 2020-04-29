@@ -1,8 +1,8 @@
 # RPCModularization
-
+* 模块结构图(来自美团组件化)
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
 
-<br>模块结构图(来自美团组件化)
+
 
 ## step1: 模块接口服务中心，支持自动注册（done）
 ### 字节码修改自动注入模块初始化和接口服务绑定代码
