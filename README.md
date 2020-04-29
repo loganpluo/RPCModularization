@@ -1,11 +1,24 @@
 # RPCModularization
-
-![](https://github.com/loganpluo/RPCModularization/blob/master/pic/%E6%A8%A1%E5%9D%97%E6%9A%B4%E9%9C%B2%E7%9A%84%E6%9C%8D%E5%8A%A1.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;;&emsp;&emsp;&emsp;&emsp;模块结构图(来自美团组件化)
+* 模块结构图(来自美团组件化)
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
+<br>
+和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
+RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
 ## step1: 模块接口服务中心，支持自动注册（done）
-### 字节码修改自动注入模块初始化和接口服务绑定代码
 ```
+    //根目录build.gradle引入 自动化注册的插件
+    buildscript {
+     dependencies {
+            classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
+      }    
+    }
+
+    
+    // app/build.gradle引入modularization.gradle 配置，实现
+    apply from: rootProject.file('modularization.gradle')
+    
+
     // 暂时手动初始化模块
     public class MyApplication extends Application {
 
@@ -49,6 +62,17 @@
 
         }
     }
+    
+    //其他模块获取 getMyTopicList
+    //build.gradle 配置依赖 模块接口工程
+    api project(':module_topic_api')
+
+    //从模块接口服务中心 获取TopicModuleService
+    RPCModuleServiceManager.findService(TopicModuleService.class).getMyTopicList(new GetMyTopicListCallBack() {
+        @Override
+        public void result(int code, String msg, List<Topic> topics) {
+        }
+    }    
 
     // 模块初始化 注册模块对外接口实现 到 模块接口服务中心， plugin-modularization插件 asm自动注册到initModules(Context context)
     public class TopicModule implements RPCModule {
@@ -58,16 +82,7 @@
         }
     }
 
-    //其他模块获取 getMyTopicList
-        //build.gradle 配置依赖 模块接口工程
-        api project(':module_topic_api')
 
-        //从模块接口服务中心 获取TopicModuleService
-        RPCModuleServiceManager.findService(TopicModuleService.class).getMyTopicList(new GetMyTopicListCallBack() {
-            @Override
-            public void result(int code, String msg, List<Topic> topics) {
-            }
-        }
 
 ```
 ## step2: 模块支持单独debug run (stop， 共用一个配置 两个mainfest merge问题)
@@ -96,6 +111,8 @@ module_personalcenter模块为可以单独debug调试模块, 配置如下
     src/main/debug/AndroidManifest.xml 同样的包名, 定义 application 和指定测试入口activity
 
 ```
+
+### 字节码修改自动注入模块初始化和接口服务绑定代码
 
 ## step3: 模块接口工程自动生成（todo）
 准备初步采用setting里面调用函数 来动态copy library里面 .api 文件 生成library工程，然后include进来, 实现微信的.api<br>
