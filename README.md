@@ -6,7 +6,6 @@
 RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
 ## step1: 模块接口服务中心，支持自动注册（done）
-### 字节码修改自动注入模块初始化和接口服务绑定代码
 ```
     // 暂时手动初始化模块
     public class MyApplication extends Application {
@@ -100,6 +99,8 @@ module_personalcenter模块为可以单独debug调试模块, 配置如下
     src/main/debug/AndroidManifest.xml 同样的包名, 定义 application 和指定测试入口activity
 
 ```
+
+### 字节码修改自动注入模块初始化和接口服务绑定代码
 
 ## step3: 模块接口工程自动生成（todo）
 准备初步采用setting里面调用函数 来动态copy library里面 .api 文件 生成library工程，然后include进来, 实现微信的.api<br>
