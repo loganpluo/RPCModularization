@@ -79,7 +79,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
     public class TopicModule implements RPCModule {
         @Override
         public void onInit(Context context) {
-            RPCModuleServiceManager.getInstance().registerService(TopicModuleService.class,new TopicModuleServiceImpl());
+            
         }
     }
 
