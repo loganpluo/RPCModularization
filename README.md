@@ -51,6 +51,17 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
         }
     }
+    
+    //其他模块获取 getMyTopicList
+    //build.gradle 配置依赖 模块接口工程
+    api project(':module_topic_api')
+
+    //从模块接口服务中心 获取TopicModuleService
+    RPCModuleServiceManager.findService(TopicModuleService.class).getMyTopicList(new GetMyTopicListCallBack() {
+        @Override
+        public void result(int code, String msg, List<Topic> topics) {
+        }
+    }    
 
     // 模块初始化 注册模块对外接口实现 到 模块接口服务中心， plugin-modularization插件 asm自动注册到initModules(Context context)
     public class TopicModule implements RPCModule {
@@ -60,16 +71,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
         }
     }
 
-    //其他模块获取 getMyTopicList
-        //build.gradle 配置依赖 模块接口工程
-        api project(':module_topic_api')
 
-        //从模块接口服务中心 获取TopicModuleService
-        RPCModuleServiceManager.findService(TopicModuleService.class).getMyTopicList(new GetMyTopicListCallBack() {
-            @Override
-            public void result(int code, String msg, List<Topic> topics) {
-            }
-        }
 
 ```
 ## step2: 模块支持单独debug run (stop， 共用一个配置 两个mainfest merge问题)
