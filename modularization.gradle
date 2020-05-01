@@ -14,6 +14,9 @@ classmodifier{
           ]
           , 'callMethodName'      : 'initModule'
           , 'callMethodParams': 'android.content.Context;com.github.rpc.modularization.RPCModule'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//           ]
           , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
                  'androidx.'.replaceAll("\\.", "/") + ".*",
                   'android.support'.replaceAll("\\.", "/") + ".*"
@@ -26,6 +29,9 @@ classmodifier{
           , 'codeInsertToMethod'      : 'initModuleServices'
           , 'callMethodName'      : 'registerModuleService'
           , 'callMethodParams': 'java.lang.Class'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//            ]
           , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
                  'androidx.'.replaceAll("\\.", "/") + ".*",
                   'android.support'.replaceAll("\\.", "/") + ".*"

@@ -51,11 +51,12 @@ class ParseConfigUtil{
         classModifierConfig.callMethodParams = ClassInfoUtil.getDescMethodParamsConfig(callMethodParams)
 
         ArrayList<String> include = config.get('include')
-        if(include == null){//默认都include
+        if(include == null || include.isEmpty()){//默认都include
             classModifierConfig.includePatterns = new ArrayList()
             classModifierConfig.includePatterns.add(Pattern.compile(".*"))
         }else{
-            //todo 指定
+            initPattern(include, classModifierConfig.includePatterns)
+            LogUtil.d(TAG,"parse includePatterns:${classModifierConfig.includePatterns}")
         }
 
         ArrayList<String> exclude = config.get('exclude')
