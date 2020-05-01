@@ -1,7 +1,7 @@
 package com.github.rpc.modularization.plugin.class_modifier
 
 enum ClassModifierType {
-    InterfaceModuleInit("InterfaceModuleInit", InitModuleClassModifier.class),//模块自动注册
+    InterfaceModuleInit("InterfaceModuleInit", InitModuleClassModifier.class),//模块自动初始化
     AnnotationModuleAutoRegister("AnnotationModuleAutoRegister", RegisterModuleServiceClassModifier.class)//注解模块自动注册
 
     public String type
