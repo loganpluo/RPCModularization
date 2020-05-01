@@ -15,7 +15,8 @@ class RegisterModuleServiceClassModifier extends ClassModifier {
         String name = classInfo.name
         LogUtil.d(TAG,"recordClassModifierTarget")
         //识别 被修改的class
-        if("com/github/rpc/modularization/RPCModuleServiceManager" == name){
+        if(classModifierConfig.codeInsertToClass == name){
+            LogUtil.i(TAG,"recordClassModifierTarget success codeInsertToClass:${classModifierConfig.codeInsertToClass}")
             codeInsertToClassFile = new File(destFile)
             LogUtil.i(TAG,"recordClassModifierTarget success codeInsertToClassFile success name:$name destFile:$destFile")
             return true
@@ -23,7 +24,9 @@ class RegisterModuleServiceClassModifier extends ClassModifier {
 
 
         //识别出注解@ModuleService 注解的实现serviceimpl
-        if("Lcom/github/rpc/modularization/ModuleService;" == classInfo.annotationDesc){
+        if("L${classModifierConfig.scanAnnotation};" == classInfo.annotationDesc){
+            LogUtil.i(TAG,"recordClassModifierTarget  success scanAnnotation:${classModifierConfig.scanAnnotation}")
+            LogUtil.i(TAG,"recordClassModifierTarget  success Annotation name:${name}")
             classList.add(name)
         }
 

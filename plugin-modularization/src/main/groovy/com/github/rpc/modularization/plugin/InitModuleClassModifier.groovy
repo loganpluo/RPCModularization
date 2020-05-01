@@ -11,16 +11,19 @@ class InitModuleClassModifier extends ClassModifier {
          String destFile = classInfo.destFilePath
          String name = classInfo.name
          String[] interfaces = classInfo.interfaces
-         LogUtil.d(TAG,"recordClassModifierTarget name:$name")
+         LogUtil.d(TAG,"recordClassModifierTarget name:$name, codeInsertToClass,${classModifierConfig.codeInsertToClass} scanInterface:${classModifierConfig.scanInterface}")
+
          def result = false
-         if("com/github/rpc/modularization/RPCModuleServiceManager" == name){
+         if(classModifierConfig.codeInsertToClass == name){
              codeInsertToClassFile = new File(destFile)
+             LogUtil.i(TAG,"recordClassModifierTarget success codeInsertToClass:${classModifierConfig.codeInsertToClass}")
              LogUtil.i(TAG,"recordClassModifierTarget success codeInsertToClassFile success name:$name destFile:$destFile")
              result = true
          }
 
          interfaces.each {
-             if(it == "com/github/rpc/modularization/RPCModule"){
+             if(it == classModifierConfig.scanInterface){
+                 LogUtil.i(TAG,"recordClassModifierTarget success scanInterface scanInterface:${classModifierConfig.scanInterface}")
                  LogUtil.i(TAG,"recordClassModifierTarget success classList  name:$name destFile:$destFile")
                  classList.add(name)
                  result = true
