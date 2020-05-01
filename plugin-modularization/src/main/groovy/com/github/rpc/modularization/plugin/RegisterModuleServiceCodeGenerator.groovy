@@ -15,19 +15,18 @@ class RegisterModuleServiceCodeGenerator implements ICodeGenerator {
             classModifier.classList.each { name ->
                 Label label1 = new Label()
                 mv.visitLabel(label1)
-                LogUtil.d(TAG,"MyMethodVisitor new name:$name")
+                LogUtil.i(TAG,"MyMethodVisitor new name:$name")
 
-                LogUtil.d(TAG,"MyMethodVisitor call staic class:${classModifier.classModifierConfig.codeInsertToClass}" +
+                LogUtil.i(TAG,"MyMethodVisitor call staic class:${classModifier.classModifierConfig.codeInsertToClass}" +
                         ".${classModifier.classModifierConfig.callMethodName}." +
                         "${classModifier.classModifierConfig.callMethodParams}")
 
                 mv.visitLdcInsn(Type.getObjectType(name))
 
-
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC
                         , classModifier.classModifierConfig.codeInsertToClass
                         , classModifier.classModifierConfig.callMethodName
-                        , "(Ljava/lang/Class;)V"//"(L${classModifier.classModifierConfig.callMethodParams};)V"
+                        , CodeGeneratorUtil.getSignCallMethodParams(classModifier.classModifierConfig.callMethodParams)
                         , false)
             }
 
@@ -35,7 +34,7 @@ class RegisterModuleServiceCodeGenerator implements ICodeGenerator {
             mv.visitLabel(label2)
             mv.visitInsn(Opcodes.RETURN)
 
-            LogUtil.i(TAG,"")
+            LogUtil.i(TAG,"RegisterModuleService modifyClass  success")
         }
 
     }

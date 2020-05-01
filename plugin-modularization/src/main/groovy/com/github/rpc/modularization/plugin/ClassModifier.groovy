@@ -43,7 +43,6 @@ abstract class ClassModifier {
         classModifierConfig.callMethodName = config.get("callMethodName") ?
                 config.get("callMethodName") : ""
         //todo 多个参数支持
-        //android.content.Context,com.github.rpc.modularization.RPCModule
         classModifierConfig.callMethodParams = config.get("callMethodParams") ?
                 convertDotToSlash(config.get("callMethodParams")) : ""
 
