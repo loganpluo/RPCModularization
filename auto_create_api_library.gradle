@@ -6,6 +6,7 @@ ext{
 
 def apiInclude(String moduleName){
     println("moduleName:$moduleName")
+    moduleName = moduleName.replace(":","")
     include ":$moduleName"
     project(":$moduleName").projectDir = new File(rootDir, "biz_module_iml/$moduleName")
     autoCreateIncludeApiModule(moduleName)
