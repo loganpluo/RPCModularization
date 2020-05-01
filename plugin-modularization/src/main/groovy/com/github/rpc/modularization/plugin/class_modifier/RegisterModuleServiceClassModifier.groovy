@@ -1,5 +1,6 @@
 package com.github.rpc.modularization.plugin.class_modifier
 
+import com.github.rpc.modularization.plugin.config.ClassModifierConfig
 import com.github.rpc.modularization.plugin.scan.ClassInfo
 import com.github.rpc.modularization.plugin.util.LogUtil
 import com.github.rpc.modularization.plugin.code_generator.ICodeGenerator
@@ -10,8 +11,8 @@ class RegisterModuleServiceClassModifier extends ClassModifier {
     private static final String TAG = "RegisterModuleServiceClassModifier"
 
     @Override
-    boolean isNeedScanAnnotation() {
-        return true
+    protected ClassModifierConfig createClassModifierConfig() {
+        return super.createClassModifierConfig()
     }
 
     @Override
