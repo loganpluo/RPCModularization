@@ -1,5 +1,6 @@
 ### 插件实现的功能
 ```
+//扫描如下类
 
 @ModuleService
 public class TopicModuleServiceImpl implements TopicModuleService {
