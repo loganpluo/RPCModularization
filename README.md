@@ -20,7 +20,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
     apply from: rootProject.file('modularization.gradle')
     
 
-    // 暂时手动初始化模块
+    // 初始化组件
     public class MyApplication extends Application {
 
         @Override
@@ -30,7 +30,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
         }
     }
 
-    //TopicModuleService对外接口 ，暂时收到你放到 biz_module_api/module_topic_api模块接口工程里面
+    //TopicModuleService对外接口 ，暂时手动放到 biz_module_api/module_topic_api模块接口工程里面
     public interface TopicModuleService  {
 
         void getMyTopicList(GetMyTopicListCallBack getMyTopicListCallBack);
