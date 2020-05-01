@@ -1,0 +1,13 @@
+
+
+ext{
+    api_include = this.&apiInclude
+}
+
+def apiInclude(String libraryName){
+    println("libraryName:$libraryName")
+    //todo copy api file, create api library
+    include ":$libraryName"
+    project(":$libraryName").projectDir = new File(rootDir, "biz_module_api/$libraryName")
+
+}

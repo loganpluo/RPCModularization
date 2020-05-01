@@ -1,12 +1,11 @@
 println "settings.gradle reading..."
 rootProject.name='RPCModularization'
+apply from:'auto_create_api_library.gradle'
 include ':app'
 include ':rpc-modularization'
 include ':plugin-modularization'
 
-
-include ':module_topic_api'
-project(':module_topic_api').projectDir = new File(rootDir, 'biz_module_api/module_topic_api')
+api_include 'module_topic_api'
 include ':module_topic'
 project(':module_topic').projectDir = new File(rootDir, 'biz_module_iml/module_topic')
 
