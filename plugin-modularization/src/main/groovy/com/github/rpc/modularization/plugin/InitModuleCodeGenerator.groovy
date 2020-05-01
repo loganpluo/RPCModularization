@@ -35,7 +35,7 @@ class InitModuleCodeGenerator implements ICodeGenerator {
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC
                         , classModifier.classModifierConfig.codeInsertToClass
                         , classModifier.classModifierConfig.callMethodName
-                        , ClassInfoUtil.getDescMethodParamsConfig(classModifier.classModifierConfig.callMethodParams)
+                        , classModifier.classModifierConfig.callMethodParams
                         , false)
             }
 

@@ -42,8 +42,9 @@ abstract class ClassModifier {
         classModifierConfig.callMethodName = config.get("callMethodName") ?
                 config.get("callMethodName") : ""
 
-        classModifierConfig.callMethodParams = config.get("callMethodParams") ?
+        String callMethodParams = config.get("callMethodParams") ?
                 convertDotToSlash(config.get("callMethodParams")) : ""
+        classModifierConfig.callMethodParams = ClassInfoUtil.getDescMethodParamsConfig(callMethodParams)
 
         //todo 提出
         ArrayList<String> exclude;
