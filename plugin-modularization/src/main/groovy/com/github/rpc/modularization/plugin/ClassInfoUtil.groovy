@@ -30,4 +30,18 @@ class ClassInfoUtil {
         return stringBuilder.toString()
     }
 
+    static String getDescLocalVariableConfig(String localVariableType){
+        if(localVariableType == null){
+            return null
+        }
+
+        return "L${convertDotToSlash(localVariableType)};"
+
+    }
+
+    static String convertDotToSlash(String str) {
+        return str ? str.replaceAll('\\.', '/').intern() : str
+    }
+
+
 }

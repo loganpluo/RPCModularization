@@ -45,8 +45,13 @@ class InitModuleCodeGenerator implements ICodeGenerator {
 
             Label endLabel = new Label()
             mv.visitLabel(endLabel)
-            mv.visitLocalVariable("context","Landroid/content/Context;", null, startLabel, endLabel, 0)
-
+            //循环读取LocalVariables来设置方法变量
+            LogUtil.d(TAG,"modifyClass classModifier.localVariables:${classModifier.classModifierConfig.localVariables}")
+            if(classModifier.classModifierConfig.localVariables){
+                classModifier.classModifierConfig.localVariables.eachWithIndex{ LocalVariable entry, int i ->
+                    mv.visitLocalVariable(entry.name,entry.desc, null, startLabel, endLabel, i)
+                }
+            }
             LogUtil.i(TAG,"InitModule modifyClass success")
         }
 

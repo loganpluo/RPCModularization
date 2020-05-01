@@ -1,5 +1,6 @@
 package com.github.rpc.modularization.plugin
 
+
 class ParseConfigUtil{
 
     static final String TAG = "ParseConfigUtil"
@@ -24,6 +25,22 @@ class ParseConfigUtil{
                 convertDotToSlash(config.get("codeInsertToMethodParams")) : ""
         classModifierConfig.codeInsertToMethodParams = ClassInfoUtil.getDescMethodParamsConfig(codeInsertToMethodParams)
 
+        LogUtil.d(TAG,"codeInsertToMethodLocalVariables: ${config.get("codeInsertToMethodLocalVariables")}")
+
+        ArrayList<Map<String, Object>> localVariablesConfig = config.get("codeInsertToMethodLocalVariables")
+        if(localVariablesConfig != null){
+            classModifierConfig.localVariables = new ArrayList<>()
+            localVariablesConfig.each {
+                String localVariableName =  it.get('name')
+                String localVariableType =  it.get('type')
+                if(localVariableName){
+                    LocalVariable localVariable = new LocalVariable(localVariableName,
+                                                    ClassInfoUtil.getDescLocalVariableConfig(localVariableType))
+                    classModifierConfig.localVariables.add(localVariable)
+                }
+            }
+        }
+
         classModifierConfig.callMethodName = config.get("callMethodName") ?
                 config.get("callMethodName") : ""
 
@@ -37,7 +54,7 @@ class ParseConfigUtil{
     }
 
     static String convertDotToSlash(String str) {
-        return str ? str.replaceAll('\\.', '/').intern() : str
+        return ClassInfoUtil.convertDotToSlash(str)
     }
 
 }

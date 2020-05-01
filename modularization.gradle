@@ -10,7 +10,7 @@ classmodifier{
           , 'codeInsertToMethod'      : 'initModules'
           , 'codeInsertToMethodParams': 'android.content.Context'
           , 'codeInsertToMethodLocalVariables':[//asm 站桩方法的变量定义
-                                        ['name':'context', 'desc': 'android/content/Context']
+                                        ['name':'context', 'type': 'android.content.Context']
           ]
           , 'callMethodName'      : 'initModule'
           , 'callMethodParams': 'android.content.Context;com.github.rpc.modularization.RPCModule'

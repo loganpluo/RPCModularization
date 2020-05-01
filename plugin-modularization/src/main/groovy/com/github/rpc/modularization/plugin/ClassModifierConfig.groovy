@@ -13,7 +13,9 @@ class ClassModifierConfig {
     String codeInsertToMethodParams;
     String callMethodName;
     String callMethodParams;
+    List<LocalVariable> localVariables;
     ArrayList<String> exclude;
+
 
     @Override
     String toString() {
@@ -26,6 +28,7 @@ class ClassModifierConfig {
         sb.append('\n\t').append('codeInsertToMethodParams').append('\t\t\t=\t').append(codeInsertToMethodParams)
         sb.append('\n\t').append('callMethodName').append('\t\t\t=\t').append(callMethodName)
         sb.append('\n\t').append('callMethodParams').append('\t\t\t=\t').append(callMethodParams)
+        sb.append('\n\t').append('localVariables').append('\t\t\t=\t').append(localVariables)
         sb.append('\n\t').append('exclude').append('\t\t\t=\t').append(exclude)
         return sb.toString()
     }
