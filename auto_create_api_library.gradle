@@ -4,10 +4,17 @@ ext{
     api_include = this.&apiInclude
 }
 
-def apiInclude(String libraryName){
-    println("libraryName:$libraryName")
-    //todo copy api file, create api library
-    include ":$libraryName"
-    project(":$libraryName").projectDir = new File(rootDir, "biz_module_api/$libraryName")
+def apiInclude(String moduleName){
+    println("moduleName:$moduleName")
+    include ":$moduleName"
+    project(":$moduleName").projectDir = new File(rootDir, "biz_module_iml/$moduleName")
+    autoCreateIncludeApiModule(moduleName)
+}
+
+def autoCreateIncludeApiModule(String moduleName){
+    //todo copy api file from impl module , create api module
+    String apiModuleName = "${moduleName}_api"
+    include ":$apiModuleName"
+    project(":$apiModuleName").projectDir = new File(rootDir, "biz_module_api/$apiModuleName")
 
 }

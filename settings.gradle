@@ -5,21 +5,9 @@ include ':app'
 include ':rpc-modularization'
 include ':plugin-modularization'
 
-api_include 'module_topic_api'
-include ':module_topic'
-project(':module_topic').projectDir = new File(rootDir, 'biz_module_iml/module_topic')
+api_include 'module_topic'
+api_include 'module_login'
+api_include 'module_personalcenter'
 
-
-include ':module_login_api'
-project(':module_login_api').projectDir = new File(rootDir, 'biz_module_api/module_login_api')
-include ':module_login'
-project(':module_login').projectDir = new File(rootDir, 'biz_module_iml/module_login')
-
-
-
-include ':module_personalcenter_api'
-project(':module_personalcenter_api').projectDir = new File(rootDir, 'biz_module_api/module_personalcenter_api')
-include ':module_personalcenter'
-project(':module_personalcenter').projectDir = new File(rootDir, 'biz_module_iml/module_personalcenter')
 
 
