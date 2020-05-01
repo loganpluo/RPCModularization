@@ -6,6 +6,11 @@ class CodeGeneratorUtil{
 
     //android/content/Context;com/github/rpc/modularization/RPCModule
     //(Landroid/content/Context;Lcom/github/rpc/modularization/RPCModule;)V
+    /**
+     * 暂时这么改了，因为之前逻辑都是配置里面只进行.替换/， 修改代码在加签名前缀什么的
+     * @param callMethodParamsConfig
+     * @return
+     */
     static String getSignCallMethodParams(String callMethodParamsConfig){
 
         StringBuilder stringBuilder = new StringBuilder()
