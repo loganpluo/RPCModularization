@@ -11,7 +11,7 @@ class CodeGeneratorUtil{
      * @param callMethodParamsConfig
      * @return
      */
-    static String getSignCallMethodParams(String callMethodParamsConfig){
+    static String getDescCallMethodParams(String callMethodParamsConfig){
 
         StringBuilder stringBuilder = new StringBuilder()
         stringBuilder.append("(")
