@@ -9,6 +9,7 @@ import org.gradle.api.Project
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import java.util.regex.Pattern
 
 class ScanHelper {
 
@@ -21,7 +22,7 @@ class ScanHelper {
      * @param path
      * @param project
      */
-    static void scanDirectory(String path, Project project, List<ClassModifier> classModifierList,
+    static void scanDirectory(String path, String root, List<ClassModifier> classModifierList,
                               File destFile){
         LogUtil.d(TAG,"test")
         File dir = new File(path)
@@ -30,7 +31,7 @@ class ScanHelper {
                 String filePath = file.absolutePath
                 LogUtil.d(TAG,"filePath: $filePath ， file.isFile:${file.isFile()}")
                 if(file.isFile()){//
-                    scanClassFile(file, project, classModifierList, destFile)
+                    scanClassFile(file, root, classModifierList, destFile)
                 }
             }
             //directoryInput.changedFiles
@@ -52,10 +53,12 @@ class ScanHelper {
             LogUtil.d(TAG,"scanJar entryName:$entryName")
 
             //support包不扫描
-            if (entryName.startsWith("androidx/support"))
+            if (entryName.startsWith("android/support"))
                 break
             //是否要过滤这个类，这个可配置
-            if (shouldProcessClass(entryName)) {
+            def shouldProcessClass = shouldProcessClass(entryName, classModifierList)
+            LogUtil.d(TAG,"scanJar shouldProcessClass:$shouldProcessClass")
+            if (shouldProcessClass) {
                 InputStream inputStream = file.getInputStream(jarEntry)
                 scanClass(inputStream, jarFile.absolutePath, classModifierList, destFile)
                 inputStream.close()
@@ -67,25 +70,74 @@ class ScanHelper {
         return true
     }
 
-    static boolean shouldProcessClass(String entryName) {
+    static boolean shouldProcessClass(String entryName,List<ClassModifier> classModifierList) {
         if (entryName == null || !entryName.endsWith(".class"))
             return false
+
         //过滤
-        return true
+        for(int i=0; i<classModifierList.size() ;i++){
+            def it = classModifierList.get(i)
+            def shouldProcessThisClass = shouldProcessThisClass(it,entryName)
+            LogUtil.d(TAG,"shouldProcessClass entryName:${entryName} shouldProcessThisClass:${shouldProcessThisClass}")
+            if(shouldProcessThisClass){
+                return true
+            }
+        }
+
+//        classModifierList.each {
+//            def shouldProcessThisClass = shouldProcessThisClass(it,entryName)
+//            LogUtil.d(TAG,"shouldProcessClass entryName:${entryName} shouldProcessThisClass:${shouldProcessThisClass}")
+//            if(shouldProcessThisClass){
+//                return true
+//            }
+//        }
+
+        return false
+    }
+
+    /**
+     * 过滤器进行过滤
+     * @param info
+     * @param entryName
+     * @return
+     */
+    private static boolean shouldProcessThisClass(ClassModifier classModifier, String entryName) {
+        ClassModifierConfig classModifierConfig = classModifier.classModifierConfig
+        def list = classModifierConfig.includePatterns
+        if (list) {
+            def exlist = classModifierConfig.excludePatterns
+            Pattern pattern, p
+            for (int i = 0; i < list.size(); i++) {
+                pattern = list.get(i)
+                if (pattern.matcher(entryName).matches()) {
+                    if (exlist) {
+                        for (int j = 0; j < exlist.size(); j++) {
+                            p = exlist.get(j)
+                            if (p.matcher(entryName).matches())
+                                return false
+                        }
+                    }
+                    return true
+                }
+            }
+        }
+        return false
     }
 
 
-
     static void scanClassFile(File classFile,
-                              Project project,
+                              String root,
                               List<ClassModifier> classModifierList,
                               File destFile){
 
         if(classModifierList.size() == 0) return
+//        def shouldProcessClass = shouldProcessClass(entryName, classModifierList)
+//        LogUtil.d(TAG,"scanJar shouldProcessClass:$shouldProcessClass")
+        def entryName = classFile.absolutePath.replace(root, '')
+        def shouldProcessClass = shouldProcessClass(entryName,classModifierList)
+        LogUtil.d(TAG,"scanClassFile entryName:$entryName shouldProcessClass:$shouldProcessClass classFile:$classFile")
 
-        LogUtil.d(TAG,"scanClassFile classFile:$classFile")
-
-        if(shouldProcessClass(classFile.path)){
+        if(shouldProcessClass){
             scanClass(classFile.newInputStream(),
                       classFile.absolutePath,
                       classModifierList,

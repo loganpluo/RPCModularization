@@ -88,9 +88,12 @@ class InjectTransform extends Transform {
                         // 获取输出目录
                         def dest = outputProvider.getContentLocation(directoryInput.name,
                                 directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
+                        String root = directoryInput.file.absolutePath
+                        if (!root.endsWith(File.separator)) root += File.separator
 
+                        LogUtil.d(TAG,"scanDirectory root:$root")
                         ScanHelper.scanDirectory(directoryInput.file.absolutePath,
-                                                mProject, extension.classModifiers,
+                                                root, extension.classModifiers,
                                                 dest)
 
                         println("directory inputname:${directoryInput.file.absolutePath}" +

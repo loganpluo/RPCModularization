@@ -1,5 +1,7 @@
 package com.github.rpc.modularization.plugin
 
+import java.util.regex.Pattern
+
 
 class ParseConfigUtil{
 
@@ -48,9 +50,28 @@ class ParseConfigUtil{
                 convertDotToSlash(config.get("callMethodParams")) : ""
         classModifierConfig.callMethodParams = ClassInfoUtil.getDescMethodParamsConfig(callMethodParams)
 
-        //todo 提出
-        ArrayList<String> exclude;
+        ArrayList<String> include = config.get('include')
+        if(include == null){//默认都include
+            classModifierConfig.includePatterns = new ArrayList()
+            classModifierConfig.includePatterns.add(Pattern.compile(".*"))
+        }else{
+            //todo 指定
+        }
 
+        ArrayList<String> exclude = config.get('exclude')
+        LogUtil.d(TAG,"parse exclude:${exclude}")
+        if(exclude && !exclude.isEmpty()){
+            initPattern(exclude, classModifierConfig.excludePatterns)
+            LogUtil.d(TAG,"parse excludePatterns:${classModifierConfig.excludePatterns}")
+        }
+
+
+    }
+
+    private static void initPattern(ArrayList<String> list, ArrayList<Pattern> patterns) {
+        list.each { s ->
+            patterns.add(Pattern.compile(s))
+        }
     }
 
     static String convertDotToSlash(String str) {

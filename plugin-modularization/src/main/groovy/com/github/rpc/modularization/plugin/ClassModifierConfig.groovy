@@ -1,5 +1,7 @@
 package com.github.rpc.modularization.plugin
 
+import java.util.regex.Pattern
+
 /**
  * 替换了/ 的路径了
  */
@@ -14,8 +16,8 @@ class ClassModifierConfig {
     String callMethodName;
     String callMethodParams;
     List<LocalVariable> localVariables;
-    ArrayList<String> exclude;
-
+    ArrayList<Pattern> includePatterns = []
+    ArrayList<Pattern> excludePatterns = []
 
     @Override
     String toString() {
@@ -29,7 +31,7 @@ class ClassModifierConfig {
         sb.append('\n\t').append('callMethodName').append('\t\t\t=\t').append(callMethodName)
         sb.append('\n\t').append('callMethodParams').append('\t\t\t=\t').append(callMethodParams)
         sb.append('\n\t').append('localVariables').append('\t\t\t=\t').append(localVariables)
-        sb.append('\n\t').append('exclude').append('\t\t\t=\t').append(exclude)
+        sb.append('\n\t').append('excludePatterns').append('\t\t\t=\t').append(excludePatterns)
         return sb.toString()
     }
 }
