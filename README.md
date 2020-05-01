@@ -1,5 +1,6 @@
 # RPCModularization
 * 模块结构图(来自美团组件化)
+<br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
 <br>
 和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
@@ -78,7 +79,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
     public class TopicModule implements RPCModule {
         @Override
         public void onInit(Context context) {
-            RPCModuleServiceManager.getInstance().registerService(TopicModuleService.class,new TopicModuleServiceImpl());
+            
         }
     }
 
@@ -113,6 +114,8 @@ module_personalcenter模块为可以单独debug调试模块, 配置如下
 ```
 
 ### 字节码修改自动注入模块初始化和接口服务绑定代码
+插件介绍：
+https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization/README.md
 
 ## step3: 模块接口工程自动生成（todo）
 准备初步采用setting里面调用函数 来动态copy library里面 .api 文件 生成library工程，然后include进来, 实现微信的.api<br>
