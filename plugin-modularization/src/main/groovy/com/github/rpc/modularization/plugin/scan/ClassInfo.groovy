@@ -1,4 +1,4 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.scan
 
 class ClassInfo{
 

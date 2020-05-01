@@ -1,4 +1,8 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.config
+
+import com.github.rpc.modularization.plugin.util.ClassInfoUtil
+import com.github.rpc.modularization.plugin.class_modifier.ClassModifierType
+import com.github.rpc.modularization.plugin.util.LogUtil
 
 import java.util.regex.Pattern
 

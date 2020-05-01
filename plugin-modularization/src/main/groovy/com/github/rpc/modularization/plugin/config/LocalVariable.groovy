@@ -1,4 +1,4 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.config
 /**
  * label不同的话还是支持不了
  * 暂时支持label 从最开始 到最后的情况

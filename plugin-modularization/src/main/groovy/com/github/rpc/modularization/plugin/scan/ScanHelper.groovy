@@ -1,11 +1,14 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.scan
 
+
+import com.github.rpc.modularization.plugin.util.LogUtil
+import com.github.rpc.modularization.plugin.class_modifier.ClassModifier
+import com.github.rpc.modularization.plugin.config.ClassModifierConfig
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
-import org.gradle.api.Project
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -83,14 +86,6 @@ class ScanHelper {
                 return true
             }
         }
-
-//        classModifierList.each {
-//            def shouldProcessThisClass = shouldProcessThisClass(it,entryName)
-//            LogUtil.d(TAG,"shouldProcessClass entryName:${entryName} shouldProcessThisClass:${shouldProcessThisClass}")
-//            if(shouldProcessThisClass){
-//                return true
-//            }
-//        }
 
         return false
     }

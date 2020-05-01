@@ -1,5 +1,7 @@
 package com.github.rpc.modularization.plugin
 
+import com.github.rpc.modularization.plugin.config.ClassModifierExtension
+import com.github.rpc.modularization.plugin.util.LogUtil
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import com.android.build.gradle.AppExtension

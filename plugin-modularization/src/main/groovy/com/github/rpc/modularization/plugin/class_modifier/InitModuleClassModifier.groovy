@@ -1,4 +1,9 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.class_modifier
+
+import com.github.rpc.modularization.plugin.scan.ClassInfo
+import com.github.rpc.modularization.plugin.util.LogUtil
+import com.github.rpc.modularization.plugin.code_generator.ICodeGenerator
+import com.github.rpc.modularization.plugin.code_generator.InitModuleCodeGenerator
 
 
 class InitModuleClassModifier extends ClassModifier {

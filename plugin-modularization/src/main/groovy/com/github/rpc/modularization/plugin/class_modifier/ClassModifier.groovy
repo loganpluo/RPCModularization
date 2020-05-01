@@ -1,6 +1,10 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.class_modifier
 
-import org.objectweb.asm.MethodVisitor
+import com.github.rpc.modularization.plugin.scan.ClassInfo
+import com.github.rpc.modularization.plugin.util.LogUtil
+import com.github.rpc.modularization.plugin.code_generator.ICodeGenerator
+import com.github.rpc.modularization.plugin.config.ClassModifierConfig
+import com.github.rpc.modularization.plugin.config.ParseConfigUtil
 
 abstract class ClassModifier {
 

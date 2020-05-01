@@ -1,4 +1,6 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.util
+
+import com.github.rpc.modularization.plugin.util.LogUtil
 
 class ClassInfoUtil {
 

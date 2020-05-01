@@ -9,6 +9,11 @@ import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
+import com.github.rpc.modularization.plugin.class_modifier.ClassModifierType
+import com.github.rpc.modularization.plugin.code_generator.InsertCodeHelper
+import com.github.rpc.modularization.plugin.config.ClassModifierExtension
+import com.github.rpc.modularization.plugin.scan.ScanHelper
+import com.github.rpc.modularization.plugin.util.LogUtil
 import org.gradle.api.Project
 import com.android.build.gradle.internal.pipeline.TransformManager
 import org.apache.commons.codec.digest.DigestUtils

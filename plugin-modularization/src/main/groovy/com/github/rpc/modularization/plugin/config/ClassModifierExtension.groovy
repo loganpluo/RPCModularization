@@ -1,5 +1,7 @@
-package com.github.rpc.modularization.plugin
-import org.gradle.api.Project
+package com.github.rpc.modularization.plugin.config
+
+import com.github.rpc.modularization.plugin.class_modifier.ClassModifier
+import com.github.rpc.modularization.plugin.class_modifier.ClassModifierType
 import org.gradle.api.Project
 
 class ClassModifierExtension {

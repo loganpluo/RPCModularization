@@ -1,4 +1,5 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.config
+
 
 import java.util.regex.Pattern
 

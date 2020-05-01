@@ -1,8 +1,8 @@
-package com.github.rpc.modularization.plugin
+package com.github.rpc.modularization.plugin.class_modifier
 
 enum ClassModifierType {
     InterfaceModuleInit("InterfaceModuleInit", InitModuleClassModifier.class),//模块自动注册
-    AnnotationModuleAutoRegister("AnnotationModuleAutoRegister",RegisterModuleServiceClassModifier.class)//注解模块自动注册
+    AnnotationModuleAutoRegister("AnnotationModuleAutoRegister", RegisterModuleServiceClassModifier.class)//注解模块自动注册
 
     public String type
     public Class<? extends ClassModifier> classModifyClass;
