@@ -28,13 +28,14 @@ public class RPCModuleServiceManager {
 
 ```
 
-### 插件工程结构
+### 插件工程关键类
 ```
 src/main/groovy/com.github.rpc.modularization.plugin
     ModularizationPlugin.groovy --插件入口类
     InjectTransform.groovy -- transform api 
-    ClassModifierExtension -- 获取到modularization.gradle的配置 转成到 classModifiers
+    ClassModifierExtension -- 获取到modularization.gradle的配置 转成 classModifiers
     ScanHelper.groovy -- 扫描 目录、jar、 class 类，调用classModifiers
+    ClassModifier -- 字节码修改功能抽象类，抽象方法有 配置解析、扫描记录目标类信息、字节码修改，方便后续扩展支持新配置修改字节码；
     InitModuleClassModifier.groovy -- 模块初始化字节码修改处理类，得到被修改的class 和 需要注入的class
     InitModuleCodeGenerator.groovy -- 模块初始化字节码插入代码类，把需要注入的class，到被修改的class的方法里面
     RegisterModuleServiceClassModifier.groovy -- 模块接口服务绑定字节码修改处理类，得到被修改的class 和 需要注入的class
