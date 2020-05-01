@@ -112,10 +112,14 @@ class InsertCodeHelper{
                                   String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions)
             LogUtil.d(TAG,"MyClassVisitor name:$name, desc:$desc" +
-                    "codeInsertToMethod:${classModifier.classModifierConfig.codeInsertToMethod}, " +
+                    ", codeInsertToMethod:${classModifier.classModifierConfig.codeInsertToMethod}, " +
                     "codeInsertToMethodParams:${classModifier.classModifierConfig.codeInsertToMethodParams}")
 
-            if (name == classModifier.classModifierConfig.codeInsertToMethod) { //注入代码到指定的方法之中
+            if (name == classModifier.classModifierConfig.codeInsertToMethod &&
+                desc == classModifier.classModifierConfig.codeInsertToMethodParams) { //注入代码到指定的方法之中
+
+                LogUtil.i(TAG," visitMethod found name:$name, desc:$desc")
+
                 boolean _static = (access & Opcodes.ACC_STATIC) > 0
                 mv = new MyMethodVisitor(Opcodes.ASM5, mv, _static, classModifier)
             }

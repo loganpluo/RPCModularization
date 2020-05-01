@@ -35,14 +35,13 @@ abstract class ClassModifier {
         classModifierConfig.codeInsertToMethod = config.get("codeInsertToMethod") ?
                 config.get("codeInsertToMethod") : ""
 
-        //todo 多个参数支持
         String codeInsertToMethodParams = config.get("codeInsertToMethodParams") ?
                 convertDotToSlash(config.get("codeInsertToMethodParams")) : ""
-        classModifierConfig.codeInsertToMethodParams = codeInsertToMethodParams
+        classModifierConfig.codeInsertToMethodParams = ClassInfoUtil.getDescMethodParamsConfig(codeInsertToMethodParams)
 
         classModifierConfig.callMethodName = config.get("callMethodName") ?
                 config.get("callMethodName") : ""
-        //todo 多个参数支持
+
         classModifierConfig.callMethodParams = config.get("callMethodParams") ?
                 convertDotToSlash(config.get("callMethodParams")) : ""
 
