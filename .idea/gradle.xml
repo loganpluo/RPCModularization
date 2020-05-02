@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/biz_module_api/module_topic_api" />
             <option value="$PROJECT_DIR$/biz_module_iml/module_login" />
             <option value="$PROJECT_DIR$/biz_module_iml/module_personalcenter" />
+            <option value="$PROJECT_DIR$/biz_module_iml/module_test" />
             <option value="$PROJECT_DIR$/biz_module_iml/module_topic" />
             <option value="$PROJECT_DIR$/plugin-modularization" />
             <option value="$PROJECT_DIR$/rpc-modularization" />

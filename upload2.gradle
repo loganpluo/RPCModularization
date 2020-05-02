@@ -1,0 +1,178 @@
+//apply from: rootProject.file('libconfig.gradle')
+println("${file('.')}")
+def localFilePath = "${file('.')}"
+localFilePath = localFilePath.substring(0, localFilePath.lastIndexOf("android"))
+println("${localFilePath}")
+apply from: "${localFilePath}android/libconfig.gradle"
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion global_compileSdkVersion
+    buildToolsVersion global_buildToolVersion
+
+    defaultConfig {
+        minSdkVersion global_minSDKVersion
+        targetSdkVersion global_targetSdkVersion
+    }
+
+    lintOptions{
+        abortOnError false
+    }
+
+    sourceSets.main.jniLibs.srcDir 'libs'
+}
+
+repositories {
+    flatDir {
+        dirs android.sourceSets.main.jniLibs.srcDirs
+    }
+}
+
+dependencies {
+    api fileTree(include: '*.jar', dir: 'libs')
+}
+
+if(project.ext.is_publish_mirrors){
+    project.ext.releaseUploadRepo = ''
+    project.ext.debugUploadRepo = ''
+    project.ext.uploadUserName = ''
+    project.ext.uploadUserPass = ''
+}else{
+    project.ext.releaseUploadRepo = ''
+    project.ext.debugUploadRepo = ''
+    project.ext.uploadUserName = ''
+    project.ext.uploadUserPass = ''
+}
+project.ext.lib_group = ""
+
+
+project.ext.artifactId = project.name.toLowerCase()
+
+project.ext.uploadRepo = project.releaseUploadRepo
+if (!project.hasProperty('versionType')) {
+    project.ext.versionType = 'debug'
+}
+if (project.versionType != 'release') {
+    project.uploadRepo = project.debugUploadRepo
+    project.lib_version += '-SNAPSHOT'
+}
+
+
+task androidSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+
+apply plugin: 'maven-publish'
+
+
+def makeDependencies(dependencies, closure) {
+    dependencies.each {
+        if((it.group != null) && (it.name != null) && (it.version != null)) {
+            println "makeDependencies for: $it.group:$it.name:$it.version"
+            def isLocalDependence = it.group == rootProject.name
+            def groupId = isLocalDependence ? project.lib_group : it.group
+            def version = isLocalDependence ? project.lib_version : it.version
+            def artName = isLocalDependence ? 'wglogin-'+it.name : it.name
+            if(groupId == "com.sina.weibo.sdk" && artName == "core"){
+                closure.call(groupId, artName, version,"openDefaultRelease","aar")
+            }else {
+                closure.call(groupId, artName, version,null,null)
+            }
+
+        }
+    }
+}
+
+def configPublishAar(publication) {
+    publication.artifact androidSourcesJar
+    publication.groupId project.lib_group
+    publication.artifactId ('wglogin-' + project.name)
+    publication.version project.lib_version
+    println "artfact: $publication.groupId:$publication.artifactId:$publication.version"
+
+    publication.pom.withXml {
+        def dependenciesNode = asNode().appendNode('dependencies')
+        makeDependencies(configurations.api.dependencies + configurations.implementation.dependencies) { groupId, artifactId, version, classifier,type ->
+            println "add dependency: $groupId:$artifactId:$version"
+            def dependencyNode = dependenciesNode.appendNode('dependency')
+            dependencyNode.appendNode('groupId', groupId)
+            dependencyNode.appendNode('artifactId', artifactId)
+            dependencyNode.appendNode('version', version)
+            if(classifier != null){
+                dependencyNode.appendNode('classifier', classifier)
+            }
+
+            if(type != null){
+                dependencyNode.appendNode('type', type)
+            }
+        }
+    }
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            aar(MavenPublication) {
+                if (project.versionType == 'release') {
+                    artifact bundleReleaseAar
+                } else {
+                    artifact bundleDebugAar
+                }
+
+                configPublishAar(it)
+            }
+//        debug(MavenPublication) {
+//            artifact bundleDebug
+//            configPublishAar(it)
+//        }
+//        release(MavenPublication) {
+//            artifact bundleRelease
+//            configPublishAar(it)
+//        }
+        }
+
+        repositories {
+            maven {
+                url project.uploadRepo
+                credentials {
+                    username project.uploadUserName
+                    password project.uploadUserPass
+                }
+            }
+        }
+    }
+}
+
+//publishing {
+//    publications {
+//        aar(MavenPublication) {
+//            if (project.versionType == 'release') {
+//                artifact bundleRelease
+//            } else {
+//                artifact bundleDebug
+//            }
+//
+//            configPublishAar(it)
+//        }
+////        debug(MavenPublication) {
+////            artifact bundleDebug
+////            configPublishAar(it)
+////        }
+////        release(MavenPublication) {
+////            artifact bundleRelease
+////            configPublishAar(it)
+////        }
+//    }
+//
+//    repositories {
+//        maven {
+//            url project.uploadRepo
+//            credentials {
+//                username project.uploadUserName
+//                password project.uploadUserPass
+//            }
+//        }
+//    }
+//}

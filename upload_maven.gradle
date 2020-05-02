@@ -1,0 +1,84 @@
+apply plugin: 'maven-publish'
+if(project.ext.is_publish_mirrors){
+    project.ext.releaseUploadRepo = ''
+    project.ext.debugUploadRepo = ''
+    project.ext.uploadUserName = ''
+    project.ext.uploadUserPass = ''
+}else{
+    project.ext.releaseUploadRepo = ''
+    project.ext.debugUploadRepo = ''
+    project.ext.uploadUserName = ''
+    project.ext.uploadUserPass = ''
+}
+
+
+
+
+project.ext.uploadRepo = project.releaseUploadRepo
+if (isDebug) {
+    project.uploadRepo = project.debugUploadRepo
+    version += '-SNAPSHOT'
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+def makeDependencies(dependencies, closure) {
+    dependencies.each {
+        if((it.group != null) && (it.name != null) && (it.version != null)) {
+            println "makeDependencies for: $it.group:$it.name:$it.version"
+            def isLocalDependence = it.group == rootProject.name
+            def groupId = isLocalDependence ? project.lib_group : it.group
+            def version = isLocalDependence ? project.lib_version : it.version
+            def artName = isLocalDependence ? 'wglogin-'+it.name : it.name
+            closure.call(groupId, artName, version)
+        }
+    }
+}
+
+def configPublishAar(publication) {
+    publication.artifact androidSourcesJar
+    publication.groupId (groupId)
+    publication.artifactId (artifactId)
+    publication.version (project.ext.version)
+    println "artfact: $publication.groupId:$publication.artifactId:$publication.version"
+
+    publication.pom.withXml {
+        def dependenciesNode = asNode().appendNode('dependencies')
+        makeDependencies(configurations.api.dependencies + configurations.implementation.dependencies) { groupId, artifactId, version ->
+            println "add dependency: $groupId:$artifactId:$version"
+            def dependencyNode = dependenciesNode.appendNode('dependency')
+            dependencyNode.appendNode('groupId', groupId)
+            dependencyNode.appendNode('artifactId', artifactId)
+            dependencyNode.appendNode('version', version)
+        }
+    }
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            aar(MavenPublication) {
+                if (isDebug) {
+                    artifact bundleDebugAar
+                } else {
+                    artifact bundleReleaseAar
+                }
+
+                configPublishAar(it)
+            }
+        }
+
+        repositories {
+            maven {
+                url project.uploadRepo
+                credentials {
+                    username project.uploadUserName
+                    password project.uploadUserPass
+                }
+            }
+        }
+    }
+}

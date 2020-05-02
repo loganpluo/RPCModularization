@@ -1,6 +1,8 @@
 
 
 ext{
+    module_iml_base_path = "biz_module_iml/"
+    module_api_base_path = "biz_module_api/"
     api_include = this.&apiInclude
 }
 
@@ -8,14 +10,34 @@ def apiInclude(String moduleName){
     println("moduleName:$moduleName")
     moduleName = moduleName.replace(":","")
     include ":$moduleName"
-    project(":$moduleName").projectDir = new File(rootDir, "biz_module_iml/$moduleName")
+    project(":$moduleName").projectDir = new File(rootDir, "${module_iml_base_path}$moduleName")
+    println("include $moduleName success")
     autoCreateIncludeApiModule(moduleName)
 }
 
 def autoCreateIncludeApiModule(String moduleName){
-    //todo copy api file from impl module , create api module
     String apiModuleName = "${moduleName}_api"
-    include ":$apiModuleName"
-    project(":$apiModuleName").projectDir = new File(rootDir, "biz_module_api/$apiModuleName")
+    autoCreateApiModule(moduleName, apiModuleName)
 
+    def file = new File(rootDir, "${module_api_base_path}$apiModuleName")
+    if(file.exists()){
+        include ":$apiModuleName"
+        project(":$apiModuleName").projectDir = new File(rootDir, "${module_api_base_path}$apiModuleName")
+        println("include $apiModuleName success")
+    }
+
+}
+
+def autoCreateApiModule(String moduleName, String apiModuleName){
+    def apiModulePath = "${module_api_base_path}$apiModuleName"
+    println("autoCreateApiModule ready create $apiModuleName in $apiModulePath")
+
+    //获取到project 指定
+
+    //todo copy api file from impl module , create api module
+    // 读取指定路径下的接口文件
+    // 对比文件是否变动
+
+    //创建 src/main/java
+    //
 }

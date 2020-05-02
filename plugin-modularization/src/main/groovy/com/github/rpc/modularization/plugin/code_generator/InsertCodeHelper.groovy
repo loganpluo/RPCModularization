@@ -126,6 +126,8 @@ class InsertCodeHelper{
             }
             return mv
         }
+
+
     }
 
     static class MyMethodVisitor extends MethodVisitor {
@@ -147,6 +149,7 @@ class InsertCodeHelper{
         void visitMaxs(int maxStack, int maxLocals) {
             super.visitMaxs(maxStack + 4, maxLocals)
         }
+
     }
 
 }

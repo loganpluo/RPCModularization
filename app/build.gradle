@@ -62,4 +62,6 @@ dependencies {
     api project(':module_personalcenter_api')
     implementation project(path: ':module_login_api')
     implementation project(path: ':module_login')
+
+    implementation project(path: ':module_test')
 }

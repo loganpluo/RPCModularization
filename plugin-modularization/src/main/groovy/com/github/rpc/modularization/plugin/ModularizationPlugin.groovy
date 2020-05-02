@@ -15,18 +15,18 @@ class ModularizationPlugin implements Plugin<Project> {
         println("=========== ${project.name} ModularizationPlugin start=============")
 
 //        ModuleDebugAbleHelper.doDebugAbleModule(project)
-//        // 获取Android扩展
-        project.extensions.create(ClassModifierExtension.EXT_NAME, ClassModifierExtension)
-
-        def android = project.extensions.getByType(AppExtension)
-//        // 注册Transform，其实就是添加了Task
-//        android.registerTransform(new FirstInjectTransform(project))
-        InjectTransform injectTransform = new InjectTransform(project)
-        android.registerTransform(injectTransform)
-        project.afterEvaluate {
-            init(project, injectTransform)
+        def appExtension = project.extensions.findByType(AppExtension)
+        if(appExtension){// app工程才执行字节码修改 模块初始化 和 自动注册
+            project.extensions.create(ClassModifierExtension.EXT_NAME, ClassModifierExtension)
+//            def android = project.extensions.getByType(AppExtension)
+            InjectTransform injectTransform = new InjectTransform(project)
+            appExtension.registerTransform(injectTransform)
+            project.afterEvaluate {
+                init(project, injectTransform)
+            }
+        }else{// library 工程 依赖api
+            ApiDirHelper.apiDir(project)
         }
-
     }
 
     static ClassModifierExtension init(Project project, InjectTransform transformImpl) {
