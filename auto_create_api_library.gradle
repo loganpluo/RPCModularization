@@ -7,9 +7,19 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 ext{
-    module_iml_base_path = "biz_module_iml/"
-    module_api_base_path = "biz_module_api/"
-    api_modulename_suffix = "_api"
+    //---------------配置-----------------------
+    module_iml_base_path = "biz_module_iml/" //实现接口的模块放的父目录
+    module_api_base_path = "biz_module_api/"//接口模块放的父目录
+    module_iml_manifest_dir = "src/main/"//实现接口的模块的放manifest文件的目录
+    module_iml_api_dir = "src/main/api/"//实现接口的模块的放.api文件的目录
+    api_modulename_suffix = "_api"//接口模块名(包名) = 实现模块名(包名) + api_modulename_suffix
+
+    api_compile_sdkversion = "29"//接口模块的build.gradle compileSdkVersion
+    api_build_toolsversion = "29.0.2"//接口模块的build.gradle buildToolsVersion
+    api_min_sdkversion = "19"//接口模块的build.gradle minSdkVersion
+    api_min_targetversion = "29"//接口模块的build.gradle targetSdkVersion
+    //--------------------------------------
+
     api_include = this.&apiInclude
 }
 
@@ -49,8 +59,8 @@ def autoCreateApiModule(String moduleName, String apiModuleName){
 
     // 读取指定路径下的接口文件遍历
     def modulePath = "${module_iml_base_path}$moduleName/"
-    def moduleMainPath = "${modulePath}src/main/"
-    def apiFileDirPath = "${moduleMainPath}api/"
+    def moduleMainPath = "${modulePath}${module_iml_manifest_dir}"
+    def apiFileDirPath = "${modulePath}${module_iml_api_dir}"
 
     def apiFileDir = new File(apiFileDirPath)
     if(!apiFileDir.exists()){
@@ -148,7 +158,7 @@ static String getModuleImplManifestPackage(String moduleMainPath){
     return manifestPackage
 }
 
-static void createBuildGradle(String apiModulePath){
+ void createBuildGradle(String apiModulePath){
     def buildGradleFile = new File(apiModulePath,"build.gradle")
     if(buildGradleFile.exists()){//todo 是否被人修改过
         println("createBuildGradle $buildGradleFile exists")
@@ -158,14 +168,12 @@ static void createBuildGradle(String apiModulePath){
     def content = "apply plugin: 'com.android.library'\n" +
             "\n" +
             "android {\n" +
-            "    compileSdkVersion 29\n" +
-            "    buildToolsVersion \"29.0.2\"\n" +
+            "    compileSdkVersion ${api_compile_sdkversion}\n" +
+            "    buildToolsVersion \"${api_build_toolsversion}\"\n" +
             "\n" +
             "    defaultConfig {\n" +
-            "        minSdkVersion 19\n" +
-            "        targetSdkVersion 29\n" +
-            "        versionCode 1\n" +
-            "        versionName \"1.0\"\n" +
+            "        minSdkVersion ${api_min_sdkversion}\n" +
+            "        targetSdkVersion ${api_min_targetversion}\n" +
             "\n" +
             "    }\n" +
             "\n" +
