@@ -62,7 +62,7 @@ def autoCreateApiModule(String moduleName, String apiModuleName){
     findApiFiles(apiFileDir, apiFiles)
     println("autoCreateApiModule findApiFiles cost:${System.currentTimeMillis() - ts}")
     if(apiFiles.isEmpty()){
-
+        println("autoCreateApiModule apiFileDir:$apiFileDir  is empty")
         return
     }
     // 对比.api接口文件是否变动，先简单全量检测是否有改动，一般接口文件变动很少

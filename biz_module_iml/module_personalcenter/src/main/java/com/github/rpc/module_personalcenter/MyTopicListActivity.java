@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.rpc.modularization.RPCModuleServiceManager;
+import com.github.rpc.module_test.TestBean;
+import com.github.rpc.module_test.TestModuleService;
 import com.github.rpc.module_topic_api.GetMyTopicListCallBack;
 import com.github.rpc.module_topic_api.Topic;
 import com.github.rpc.module_topic_api.TopicModuleService;
@@ -29,6 +32,11 @@ public class MyTopicListActivity extends AppCompatActivity {
                         stringBuilder.append("\n");
                     }
                     topicsView.setText(stringBuilder.toString());
+
+                    TestBean testBean =
+                            RPCModuleServiceManager.findService(TestModuleService.class).getBean();
+                    Toast.makeText(getBaseContext(),"TestModuleService.bean "+testBean.name, Toast.LENGTH_LONG).show();
+
                 }
 
             }

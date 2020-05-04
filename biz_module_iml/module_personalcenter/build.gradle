@@ -32,6 +32,6 @@ dependencies {
 
     api project(':module_personalcenter_api')
     api project(':module_topic_api')
-
+    api project(':module_test_api')
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }
