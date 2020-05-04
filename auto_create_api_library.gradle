@@ -208,7 +208,7 @@ static def isApiFileModified(List<File> apiFiles, String modulePath){
     def apiLastModifiedFile = new File("${modulePath}api_lastmodified")
     def apiFilesLastModifiedRecordMd5 = ""
     if(!apiLastModifiedFile.exists()){
-        apiLastModifiedFile.createNewFile() // todo build 还是添加到 .gitignore
+        apiLastModifiedFile.createNewFile()
     }else{
         apiFilesLastModifiedRecordMd5 = readFileContent(apiLastModifiedFile)
     }
