@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/biz_module_api/module_login_api" />
             <option value="$PROJECT_DIR$/biz_module_api/module_personalcenter_api" />
+            <option value="$PROJECT_DIR$/biz_module_api/module_test_api" />
             <option value="$PROJECT_DIR$/biz_module_api/module_topic_api" />
             <option value="$PROJECT_DIR$/biz_module_iml/module_login" />
             <option value="$PROJECT_DIR$/biz_module_iml/module_personalcenter" />

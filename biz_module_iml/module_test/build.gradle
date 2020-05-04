@@ -30,6 +30,6 @@ dependencies {
     api app_dependencies.rpc_modularization
 
     api project(':module_login_api')
-
+    api project(':module_test_api')
 
 }

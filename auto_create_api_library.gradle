@@ -1,4 +1,10 @@
+import org.xml.sax.SAXException
+import org.xml.sax.helpers.DefaultHandler
 
+import javax.xml.parsers.SAXParser
+import javax.xml.parsers.SAXParserFactory
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 ext{
     module_iml_base_path = "biz_module_iml/"
@@ -7,7 +13,6 @@ ext{
 }
 
 def apiInclude(String moduleName){
-    println("moduleName:$moduleName")
     moduleName = moduleName.replace(":","")
     include ":$moduleName"
     project(":$moduleName").projectDir = new File(rootDir, "${module_iml_base_path}$moduleName")
@@ -15,7 +20,14 @@ def apiInclude(String moduleName){
     autoCreateIncludeApiModule(moduleName)
 }
 
+/**
+ * 扫描 module_iml_base_path 目录下 moduleName 模块实现工程 src/main/api/的.api接口文件,
+ * .api接口文件有变动则创建Api模块，把.api接口文件 copy到api模块，并重命名成.java文件
+ * @param moduleName
+ * @return
+ */
 def autoCreateIncludeApiModule(String moduleName){
+    long ts = System.currentTimeMillis()
     String apiModuleName = "${moduleName}_api"
     autoCreateApiModule(moduleName, apiModuleName)
 
@@ -23,21 +35,330 @@ def autoCreateIncludeApiModule(String moduleName){
     if(file.exists()){
         include ":$apiModuleName"
         project(":$apiModuleName").projectDir = new File(rootDir, "${module_api_base_path}$apiModuleName")
-        println("include $apiModuleName success")
+        println("include $apiModuleName success, cost:${System.currentTimeMillis() - ts}")
+    }else{
+        println("include $apiModuleName failed")
     }
 
 }
 
 def autoCreateApiModule(String moduleName, String apiModuleName){
-    def apiModulePath = "${module_api_base_path}$apiModuleName"
+    def apiModulePath = "${module_api_base_path}$apiModuleName/"
     println("autoCreateApiModule ready create $apiModuleName in $apiModulePath")
 
-    //获取到project 指定
+    // 读取指定路径下的接口文件遍历
+    def modulePath = "${module_iml_base_path}$moduleName/"
+    def moduleMainPath = "${modulePath}src/main/"
+    def apiFileDirPath = "${moduleMainPath}api/"
 
-    //todo copy api file from impl module , create api module
-    // 读取指定路径下的接口文件
-    // 对比文件是否变动
+    def apiFileDir = new File(apiFileDirPath)
+    if(!apiFileDir.exists()){
+        println("autoCreateApiModule apiFileDir:$apiFileDir, not exsit")
+        return
+    }
+    //遍历文件夹， 找出所有以.api后缀的文件
+    List<File> apiFiles = new ArrayList<>();
+    def ts = System.currentTimeMillis()
+    findApiFiles(apiFileDir, apiFiles)
+    println("autoCreateApiModule findApiFiles cost:${System.currentTimeMillis() - ts}")
+    if(apiFiles.isEmpty()){
 
-    //创建 src/main/java
-    //
+        return
+    }
+    // 对比.api接口文件是否变动，先简单全量检测是否有改动，一般接口文件变动很少
+    if(!isApiFileModified(apiFiles, modulePath)){
+        println("autoCreateApiModule apiFileDir:$apiFileDir not Modified")
+        return
+    }
+
+    //有变动则创建Api模块，把.api接口文件 copy到api模块，并重命名成.java文件(先粗暴的删除后copy .api文件)
+    createApiModule(apiFiles,apiModulePath,moduleMainPath)
 }
+
+
+def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMainPath){
+    File apiModuleDir = new File(apiModulePath)
+
+    // 创建 biz_module_api/module_test_api $apiModulePath
+    if(!apiModuleDir.exists()){
+        apiModuleDir.mkdir()
+    }
+
+    //先删除 todo diff 更新
+    def javaDirPath = "${apiModulePath}src/main/java/"
+    def javaDir = new File(javaDirPath)
+
+    if(javaDir.exists()){
+        javaDir.delete()
+    }
+
+    def result = javaDir.mkdirs()
+
+    println("createApiModule javaDir:$javaDir , mkdirs result:$result")
+
+    // 创建 biz_module_api/module_test_api/src/main/java 把.api copy到这个目录下面，没有文件夹则创建并重命名
+    for(File file : apiFiles){
+        def descFile = getCreateDescFile(file, javaDirPath)
+        copyFile(file, descFile)
+    }
+
+    // 创建 biz_module_api/module_test_api/src/main/AndroidManifest.xml
+    createAndroidManifest(apiModulePath,moduleMainPath)
+    // 创建 biz_module_api/module_test_api/.build.gradle
+    createBuildGradle(apiModulePath)
+    // 创建 biz_module_api/module_test_api/.gitignore
+    createGitIgnore(apiModulePath)
+}
+
+static void createAndroidManifest(String apiModulePath, String moduleMainPath){
+    def androidManifestFile = new File("${apiModulePath}src/main","AndroidManifest.xml")
+    //如果存在则不需要进行创建 todo 是不是要记录下修改时间
+    if(androidManifestFile.exists()){//是否被人修改过，被人修改过则需要被删除
+        println("createAndroidManifest $androidManifestFile exists")
+        return
+    }
+    androidManifestFile.createNewFile()
+    //读取到实现实现文件 module_login的 AndroidManifest.xml的 package，然后然后加_api
+    def moduleImplManifestPackage = getModuleImplManifestPackage(moduleMainPath)
+    String content = "<manifest package=\"${moduleImplManifestPackage}_api\" />"
+    writeFile(androidManifestFile, content)
+    println("createAndroidManifest $androidManifestFile create success")
+}
+
+static String getModuleImplManifestPackage(String moduleMainPath){
+    def moduleManifestFile = new File(moduleMainPath,"AndroidManifest.xml")
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    SAXParser saxParser = factory.newSAXParser()
+    def manifestPackage = ""
+    saxParser.parse(moduleManifestFile,new DefaultHandler(){
+        @Override
+        void startElement(String uri, String localName, String qName, org.xml.sax.Attributes attributes) throws SAXException {
+            super.startElement(uri, localName, qName, attributes)
+            if("manifest".endsWith(qName)){
+                manifestPackage = attributes.getValue("package")
+            }
+        }
+    })
+    println("getModuleImplManifestPackage manifestPackage:$manifestPackage")
+    if(manifestPackage.length() == 0){
+        throw new Exception("getModuleImplManifestPackage failed")
+    }
+    return manifestPackage
+}
+
+static void createBuildGradle(String apiModulePath){
+    def buildGradleFile = new File(apiModulePath,"build.gradle")
+    if(buildGradleFile.exists()){//todo 是否被人修改过
+        println("createBuildGradle $buildGradleFile exists")
+        return
+    }
+    buildGradleFile.createNewFile()
+    def content = "apply plugin: 'com.android.library'\n" +
+            "\n" +
+            "android {\n" +
+            "    compileSdkVersion 29\n" +
+            "    buildToolsVersion \"29.0.2\"\n" +
+            "\n" +
+            "    defaultConfig {\n" +
+            "        minSdkVersion 19\n" +
+            "        targetSdkVersion 29\n" +
+            "        versionCode 1\n" +
+            "        versionName \"1.0\"\n" +
+            "\n" +
+            "    }\n" +
+            "\n" +
+            "\n" +
+            "}\n" +
+            "\n" +
+            "dependencies {\n" +
+            "    implementation fileTree(dir: 'libs', include: ['*.jar'])\n" +
+            "}"
+
+    writeFile(buildGradleFile,content)
+    println("createBuildGradle $buildGradleFile create success")
+}
+
+static void createGitIgnore(String apiModulePath){
+    def gitIgnoreFile = new File(apiModulePath,".gitignore")
+    if(gitIgnoreFile.exists()){
+        return
+    }
+    gitIgnoreFile.createNewFile()
+    String content = "/build"
+    writeFile(gitIgnoreFile, content)
+}
+
+/**
+ *
+ * @param apiFiles
+ * @param modulePath
+ * @return
+ */
+static def isApiFileModified(List<File> apiFiles, String modulePath){
+    def apiLastModifiedFile = new File("${modulePath}api_lastmodified")
+    def apiFilesLastModifiedRecordMd5 = ""
+    if(!apiLastModifiedFile.exists()){
+        apiLastModifiedFile.createNewFile() // todo build 还是添加到 .gitignore
+    }else{
+        apiFilesLastModifiedRecordMd5 = readFileContent(apiLastModifiedFile)
+    }
+    def apiFilesModifiedRecord = new StringBuilder()
+    apiFiles.each {
+        println("autoCreateApiModule apiFile $it , lastModified:${it.lastModified()}")
+        apiFilesModifiedRecord.append(it.path)
+        apiFilesModifiedRecord.append("_")
+        apiFilesModifiedRecord.append(it.lastModified())
+        apiFilesModifiedRecord.append("&")
+    }
+    println("apiFilesModifiedRecord:$apiFilesModifiedRecord")
+    def ts = System.currentTimeMillis()
+    def md5 = md5(apiFilesModifiedRecord.toString())
+    def cost = System.currentTimeMillis() - ts
+    println("apiFilesModifiedRecord md5:$md5, cost:$cost, apiFilesLastModifiedRecordMd5:$apiFilesLastModifiedRecordMd5")
+    def isModify = apiFilesLastModifiedRecordMd5 != md5
+
+    if(isModify){
+        ts = System.currentTimeMillis()
+        writeFile(apiLastModifiedFile, md5)
+        cost = System.currentTimeMillis() - ts
+        println("apiFilesModifiedRecord write md5:$md5, cost:$cost")
+    }else{
+        println("api file no Modify")
+    }
+
+    return isModify
+}
+
+static def findApiFiles(File apiFileDir, List<File> apiFiles){
+
+    LinkedList<File> list = new LinkedList<>()
+    list.push(apiFileDir)
+    while (!list.isEmpty()){
+        def file = list.pop()
+        if(file.isFile() && file.getName().endsWith(".api")){
+            apiFiles.add(file)
+        }else{
+            for(File child :file.listFiles()){
+                list.push(child)
+            }
+        }
+    }
+
+}
+
+
+static def md5(String input) {
+    if(input == null || input.length() == 0) {
+        return null;
+    }
+    try {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(input.getBytes());
+        byte[] byteArray = md5.digest();
+
+        BigInteger bigInt = new BigInteger(1, byteArray);
+        // 参数16表示16进制
+        String result = bigInt.toString(16);
+        // 不足32位高位补零
+        while(result.length() < 32) {
+            result = "0" + result;
+        }
+        return result;
+    } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+static def readFileContent(File file){
+
+    int len = (int) file.length();
+    if (len == 0)
+    {
+        return ""
+    }
+
+    def fileInputStream = new FileInputStream(file)
+    BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)
+    def bytes = new byte[len]
+    bufferedInputStream.read(bytes)
+    String content = new String(bytes,"UTF-8")
+    println("readFileContent file:$file content:$content")
+    fileInputStream.close()
+
+    return content
+}
+
+static def writeFile(File file, String content){
+    def fileOutputStream = new FileOutputStream(file)
+    fileOutputStream.write(content.getBytes())
+    fileOutputStream.close()
+}
+
+
+def getCreateDescFile(File src, String javaDirPath){
+    def apiSrcPath = "api/"
+    def index = src.getPath().indexOf(apiSrcPath) + apiSrcPath.length()
+    def packageFilePath = src.getPath().substring(index)
+
+    def descFile = new File("${javaDirPath}$packageFilePath".replace(".api",".java"))
+    println("getCreateDescFile descFile:$descFile")
+    if(!descFile.exists()){
+        descFile.getParentFile().mkdirs()
+        println("descFile.getParentFile :${descFile.getParentFile()}")
+        descFile.createNewFile()
+    }else{
+        println("desc exist")
+    }
+    return descFile
+}
+
+
+/**
+ * 复制文件
+ *
+ * @param src  源文件
+ * @param dest 目标文件
+ * @return 返回操作结果
+ */
+public static boolean copyFile (File src, File dest)
+{
+    if (null != src && !src.exists())
+        return false;
+    if(!dest.exists()){
+        dest.createNewFile()
+    }
+    try {
+        return copyStream(new FileInputStream(src), new FileOutputStream(dest));
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
+public static boolean copyStream(InputStream src, OutputStream dest) {
+    try
+    {
+        byte[] buffer = new byte[2048];
+        int bytesread;
+        while ((bytesread = src.read(buffer)) != -1)
+        {
+            if (bytesread > 0)
+                dest.write(buffer, 0, bytesread);
+        }
+
+        return true;
+    }
+    catch (IOException e)
+    {
+        e.printStackTrace();
+    }
+    finally
+    {
+        src.close();
+        dest.close();
+    }
+
+    return false;
+}
+
