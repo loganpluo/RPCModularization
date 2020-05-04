@@ -5,10 +5,11 @@ include ':app'
 include ':rpc-modularization'
 include ':plugin-modularization'
 
+api_include ':module_test'
 api_include ':module_topic'
 api_include ':module_login'
 api_include ':module_personalcenter'
-api_include ':module_test'
+
 
 
 

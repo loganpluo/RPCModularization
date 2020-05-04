@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException
 ext{
     module_iml_base_path = "biz_module_iml/"
     module_api_base_path = "biz_module_api/"
+    api_modulename_suffix = "_api"
     api_include = this.&apiInclude
 }
 
@@ -28,7 +29,7 @@ def apiInclude(String moduleName){
  */
 def autoCreateIncludeApiModule(String moduleName){
     long ts = System.currentTimeMillis()
-    String apiModuleName = "${moduleName}_api"
+    String apiModuleName = "${moduleName}${api_modulename_suffix}"
     autoCreateApiModule(moduleName, apiModuleName)
 
     def file = new File(rootDir, "${module_api_base_path}$apiModuleName")
@@ -65,8 +66,9 @@ def autoCreateApiModule(String moduleName, String apiModuleName){
         println("autoCreateApiModule apiFileDir:$apiFileDir  is empty")
         return
     }
-    // 对比.api接口文件是否变动，先简单全量检测是否有改动，一般接口文件变动很少
-    if(!isApiFileModified(apiFiles, modulePath)){
+
+    //存在 api_module且没有变动
+    if(!isApiFileModified(apiFiles, modulePath) && new File(apiModulePath).exists()){
         println("autoCreateApiModule apiFileDir:$apiFileDir not Modified")
         return
     }
@@ -110,7 +112,7 @@ def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMain
     createGitIgnore(apiModulePath)
 }
 
-static void createAndroidManifest(String apiModulePath, String moduleMainPath){
+void createAndroidManifest(String apiModulePath, String moduleMainPath){
     def androidManifestFile = new File("${apiModulePath}src/main","AndroidManifest.xml")
     //如果存在则不需要进行创建 todo 是不是要记录下修改时间
     if(androidManifestFile.exists()){//是否被人修改过，被人修改过则需要被删除
@@ -120,7 +122,7 @@ static void createAndroidManifest(String apiModulePath, String moduleMainPath){
     androidManifestFile.createNewFile()
     //读取到实现实现文件 module_login的 AndroidManifest.xml的 package，然后然后加_api
     def moduleImplManifestPackage = getModuleImplManifestPackage(moduleMainPath)
-    String content = "<manifest package=\"${moduleImplManifestPackage}_api\" />"
+    String content = "<manifest package=\"${moduleImplManifestPackage}${api_modulename_suffix}\" />"
     writeFile(androidManifestFile, content)
     println("createAndroidManifest $androidManifestFile create success")
 }
