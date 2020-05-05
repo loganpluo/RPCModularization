@@ -3,6 +3,7 @@ package com.github.rpc.modularization;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.github.rpc.modularization.demo.R;
@@ -17,7 +18,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.my_topic).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RPCModuleServiceManager.findService(PersonalCenterModuleService.class).goToMyTopicListPage(MainActivity.this);
+
+                PersonalCenterModuleService personalCenterModuleService =
+                        RPCModuleServiceManager.findService(PersonalCenterModuleService.class);
+                Log.d("MainActivity","personalCenterModuleService:"+personalCenterModuleService);
+                personalCenterModuleService.goToMyTopicListPage(MainActivity.this);
             }
         });
     }

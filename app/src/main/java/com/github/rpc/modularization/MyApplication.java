@@ -8,5 +8,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         RPCModuleServiceManager.init(getApplicationContext());
+//        RPCModuleServiceManager.init(getApplicationContext(),ModuleServiceType.SingleInstance);
     }
 }

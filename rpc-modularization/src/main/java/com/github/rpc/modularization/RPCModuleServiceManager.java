@@ -20,6 +20,8 @@ public class RPCModuleServiceManager {
 
     private Map<String, Class<?>> allApiServicesDictionary;// 服务接口class.name - 实现服务的class映射表
     private Map<String, Object> allSingleInstanceDictionary;// 全局单利服务
+    private static ModuleServiceType defaultModuleServiceType = ModuleServiceType.New;//默认是new 服务
+
 
     private RPCModuleServiceManager() {
         allApiServicesDictionary = new HashMap<>();
@@ -27,6 +29,11 @@ public class RPCModuleServiceManager {
     }
 
     public static void init(Context context){
+        init(context, ModuleServiceType.New);
+    }
+
+    public static void init(Context context,ModuleServiceType defaultModuleServiceType){
+        RPCModuleServiceManager.defaultModuleServiceType = defaultModuleServiceType;
         initModules(context);
         initModuleServices();
     }
@@ -90,7 +97,7 @@ public class RPCModuleServiceManager {
     }
 
     public static <ModuleService> ModuleService findService(Class<ModuleService> service) {
-        return findService(service, ModuleServiceType.New);
+        return findService(service, RPCModuleServiceManager.defaultModuleServiceType);
     }
 
 
@@ -105,7 +112,7 @@ public class RPCModuleServiceManager {
             return RPCModuleServiceManager.getInstance().innerFindSingleInstanceService(service);
         }
 
-        return RPCModuleServiceManager.getInstance().innerFindSingleInstanceService(service);
+        return RPCModuleServiceManager.getInstance().innerFindNewService(service);
     }
 
     private <ModuleService> ModuleService innerFindSingleInstanceService(Class<ModuleService> service) {
