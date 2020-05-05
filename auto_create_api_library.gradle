@@ -8,16 +8,16 @@ import java.security.NoSuchAlgorithmException
 
 ext{
     //---------------配置-----------------------
-    module_iml_base_path = "biz_module_iml/" //实现接口的模块放的父目录
-    module_api_base_path = "biz_module_api/"//接口模块放的父目录
-    module_iml_manifest_dir = "src/main/"//实现接口的模块的放manifest文件的目录
-    module_iml_api_dir = "src/main/api/"//实现接口的模块的放.api文件的目录
-    api_modulename_suffix = "_api"//接口模块名(包名) = 实现模块名(包名) + api_modulename_suffix
+    module_iml_base_path = getProperty("module_iml_base_path") //实现接口的模块放的父目录
+    module_api_base_path = getProperty("module_api_base_path")//接口模块放的父目录
+    module_iml_manifest_dir = getProperty("module_iml_manifest_dir")//实现接口的模块的放manifest文件的目录
+    module_iml_api_dir = getProperty("module_iml_api_dir")//实现接口的模块的放.api文件的目录
+    api_modulename_suffix = getProperty("api_modulename_suffix")//接口模块名(包名) = 实现模块名(包名) + api_modulename_suffix
 
-    api_compile_sdkversion = "29"//接口模块的build.gradle compileSdkVersion
-    api_build_toolsversion = "29.0.2"//接口模块的build.gradle buildToolsVersion
-    api_min_sdkversion = "19"//接口模块的build.gradle minSdkVersion
-    api_min_targetversion = "29"//接口模块的build.gradle targetSdkVersion
+    api_compile_sdkversion = getProperty("api_compile_sdkversion")//接口模块的build.gradle compileSdkVersion
+    api_build_toolsversion = getProperty("api_build_toolsversion")//接口模块的build.gradle buildToolsVersion
+    api_min_sdkversion = getProperty("api_min_sdkversion")//接口模块的build.gradle minSdkVersion
+    api_min_targetversion = getProperty("api_min_targetversion")//接口模块的build.gradle targetSdkVersion
     //--------------------------------------
 
     api_include = this.&apiInclude

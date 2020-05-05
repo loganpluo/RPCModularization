@@ -1,4 +1,4 @@
-package com.github.rpc.module_test;
+package src.com.github.rpc.module_test;
 
 public class TestBean{
     public String name;
