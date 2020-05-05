@@ -13,7 +13,6 @@ class ModularizationPlugin implements Plugin<Project> {
     void apply(Project project) {
         println()
         println("=========== ${project.name} ModularizationPlugin start=============")
-
 //        ModuleDebugAbleHelper.doDebugAbleModule(project)
         def appExtension = project.extensions.findByType(AppExtension)
         if(appExtension){// app工程才执行字节码修改 模块初始化 和 自动注册

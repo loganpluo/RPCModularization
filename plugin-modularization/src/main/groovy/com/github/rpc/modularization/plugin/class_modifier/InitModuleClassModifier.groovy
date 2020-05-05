@@ -37,7 +37,8 @@ class InitModuleClassModifier extends ClassModifier {
          return result
      }
 
-     @Override
+
+    @Override
      ICodeGenerator getICodeGenerator() {
          return new InitModuleCodeGenerator()
      }

@@ -41,6 +41,14 @@ abstract class ClassModifier {
      */
     abstract boolean recordClassModifierTarget(ClassInfo classInfo)
 
+    /**
+     * codeInsertToClassFile 和 classList完整；
+     * 被修改类 和 插入的类信息是否收集完整
+     * @return
+     */
+    boolean  hasWholeInfo(){
+        return codeInsertToClassFile != null && codeInsertToClassFile.exists() && !classList.isEmpty()
+    }
 
     /**
      * class字节码修改实现

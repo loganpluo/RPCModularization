@@ -73,6 +73,11 @@ class InjectTransform extends Transform {
         extension.loadConfig()
         println "-------------------- ${getName()} transform 开始 isIncremental：${isIncremental}-------------------"
 
+        if("true" == mProject.getProperties().get("isDebugPMLog")){
+            LogUtil.isDebugPMLog = true
+            println("isDebugPMLog true")
+        }
+
         //每次得到 List<ClassModifier>
 
         println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.type}"
@@ -132,7 +137,12 @@ class InjectTransform extends Transform {
         }
 
         extension.classModifiers.each {
-            InsertCodeHelper.insertInitCodeTo(it)
+            if(it.hasWholeInfo()){
+                InsertCodeHelper.insertInitCodeTo(it)
+            }else{
+                LogUtil.i(TAG,"classModifiers codeInsertToClassFile:${it.codeInsertToClassFile}, " +
+                        " classList.isEmpty:${it.classList.isEmpty()}")
+            }
         }
 
         long cost = System.currentTimeMillis() - startTs
