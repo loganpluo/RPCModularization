@@ -96,6 +96,21 @@ def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMain
         apiModuleDir.mkdir()
     }
 
+    // 创建 biz_module_api/module_test_api/src/main/java 把.api copy到这个目录下面，没有文件夹则创建并重命名
+    createApiJavaSrc(apiFiles, apiModulePath)
+
+    //创建 biz_module_api/module_test_api/src/main/res todo 支持资源
+
+    // 创建 biz_module_api/module_test_api/src/main/AndroidManifest.xml
+    createAndroidManifest(apiModulePath,moduleMainPath)
+    // 创建 biz_module_api/module_test_api/.build.gradle
+    createBuildGradle(apiModulePath)
+    // 创建 biz_module_api/module_test_api/.gitignore
+    createGitIgnore(apiModulePath)
+
+}
+
+void createApiJavaSrc(List<File> apiFiles, String apiModulePath){
     //先删除 todo diff 更新
     def javaDirPath = "${apiModulePath}src/main/java/"
     def javaDir = new File(javaDirPath)
@@ -108,19 +123,12 @@ def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMain
 
     println("createApiModule javaDir:$javaDir , mkdirs result:$result")
 
-    // 创建 biz_module_api/module_test_api/src/main/java 把.api copy到这个目录下面，没有文件夹则创建并重命名
     for(File file : apiFiles){
         def descFile = getCreateDescFile(file, javaDirPath)
         copyFile(file, descFile)
     }
-
-    // 创建 biz_module_api/module_test_api/src/main/AndroidManifest.xml
-    createAndroidManifest(apiModulePath,moduleMainPath)
-    // 创建 biz_module_api/module_test_api/.build.gradle
-    createBuildGradle(apiModulePath)
-    // 创建 biz_module_api/module_test_api/.gitignore
-    createGitIgnore(apiModulePath)
 }
+
 
 void createAndroidManifest(String apiModulePath, String moduleMainPath){
     def androidManifestFile = new File("${apiModulePath}src/main","AndroidManifest.xml")
@@ -307,11 +315,8 @@ static def writeFile(File file, String content){
 
 
 def getCreateDescFile(File src, String javaDirPath){
-//    def apiSrcPath = "api/"
     def index = src.getPath().indexOf(module_iml_api_src) + module_iml_api_src.length()
     def packageFilePath = src.getPath().substring(index)
-    println("getCreateDescFile src:$src")
-    println("getCreateDescFile javaDirPath:$javaDirPath, packageFilePath:$packageFilePath")
     def descFile = new File("${javaDirPath}$packageFilePath".replace(".api",".java"))
     println("getCreateDescFile descFile:$descFile")
     if(!descFile.exists()){
