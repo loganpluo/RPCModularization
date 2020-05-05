@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.novoda.bintray-release'
 println("rpc-modularization luopeng gradle")
 android {
     compileSdkVersion 29
@@ -27,4 +27,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+}
+
+publish{
+    userOrg = 'loganpluo' // Bintray 账号名
+    groupId = 'com.github.rpc.modularization'
+    artifactId = 'rpc-modularization'
+    publishVersion = '1.0.1'
+    desc = 'rpc-modularization for anroid'
+    website = 'https://github.com/loganpluo/RPCModularization.git'
 }

@@ -27,7 +27,7 @@ classmodifier{
           'scanAnnotation'   : 'com.github.rpc.modularization.ModuleService'
           , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
           , 'codeInsertToMethod'      : 'initModuleServices'
-          , 'callMethodName'      : 'registerModuleService'
+          , 'callMethodName'      : 'registerService'
           , 'callMethodParams': 'java.lang.Class'
 //          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
 //                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",

@@ -41,18 +41,14 @@ public class RPCModuleServiceManager {
         rpcModule.onInit(context);
     }
 
-    private static void registerModuleService(Class<?> serviceImpl){
+    private static void registerService(Class<?> serviceImpl){
         Class<?>[] serviceInterfaces = serviceImpl.getInterfaces();
         if(serviceInterfaces.length == 0 ){
             throw new ArrayIndexOutOfBoundsException("@ModuleService "+serviceImpl.getName()
                     +" must implements module api interface");
         }
-        getInstance().registerModuleService(serviceInterfaces[0], serviceImpl);
+        getInstance().registerService(serviceInterfaces[0], serviceImpl);
         Log.i(TAG,"registerModuleService serviceImpl:"+serviceImpl.getName());
-    }
-
-    private void registerModuleService(Class serviceApiClass, Class<?> serviceImplClass){
-        allApiServicesDictionary.put(getServiceKey(serviceApiClass), serviceImplClass);
     }
 
     private String getServiceKey(Class serviceApiClass){
