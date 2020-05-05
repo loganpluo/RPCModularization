@@ -16,7 +16,8 @@ class ApiDirHelper{
 
         def taskNames = project.gradle.startParameter.taskNames
         LogUtil.i(TAG,"apiDir taskNames:$taskNames")
-        def apiDir = "src/main/api"
+        LogUtil.i(TAG,"apiDir module_iml_api_src:${project.getProperties().get("module_iml_api_src")}")
+        def apiDir = project.getProperties().get("module_iml_api_src")
 
         project.android.sourceSets.main {
             if (project.file("$apiDir").exists()) {

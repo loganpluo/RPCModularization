@@ -11,7 +11,7 @@ ext{
     module_iml_base_path = getProperty("module_iml_base_path") //实现接口的模块放的父目录
     module_api_base_path = getProperty("module_api_base_path")//接口模块放的父目录
     module_iml_manifest_dir = getProperty("module_iml_manifest_dir")//实现接口的模块的放manifest文件的目录
-    module_iml_api_dir = getProperty("module_iml_api_dir")//实现接口的模块的放.api文件的目录
+    module_iml_api_src = getProperty("module_iml_api_src")//实现接口的模块的放.api文件的目录
     api_modulename_suffix = getProperty("api_modulename_suffix")//接口模块名(包名) = 实现模块名(包名) + api_modulename_suffix
 
     api_compile_sdkversion = getProperty("api_compile_sdkversion")//接口模块的build.gradle compileSdkVersion
@@ -60,7 +60,7 @@ def autoCreateApiModule(String moduleName, String apiModuleName){
     // 读取指定路径下的接口文件遍历
     def modulePath = "${module_iml_base_path}$moduleName/"
     def moduleMainPath = "${modulePath}${module_iml_manifest_dir}"
-    def apiFileDirPath = "${modulePath}${module_iml_api_dir}"
+    def apiFileDirPath = "${modulePath}${module_iml_api_src}"
 
     def apiFileDir = new File(apiFileDirPath)
     if(!apiFileDir.exists()){
@@ -307,10 +307,11 @@ static def writeFile(File file, String content){
 
 
 def getCreateDescFile(File src, String javaDirPath){
-    def apiSrcPath = "api/"
-    def index = src.getPath().indexOf(apiSrcPath) + apiSrcPath.length()
+//    def apiSrcPath = "api/"
+    def index = src.getPath().indexOf(module_iml_api_src) + module_iml_api_src.length()
     def packageFilePath = src.getPath().substring(index)
-
+    println("getCreateDescFile src:$src")
+    println("getCreateDescFile javaDirPath:$javaDirPath, packageFilePath:$packageFilePath")
     def descFile = new File("${javaDirPath}$packageFilePath".replace(".api",".java"))
     println("getCreateDescFile descFile:$descFile")
     if(!descFile.exists()){
