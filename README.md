@@ -47,9 +47,9 @@ apply plugin: 'com.github.rpc.modularization'
 
 #---------------auto_create_api_library.gradle的配置-----------------------
 #实现接口的模块放的父目录
-module_iml_base_path = ./
+module_iml_base_path = biz_module_iml/
 #接口模块放的父目录
-module_api_base_path = ./
+module_api_base_path = biz_module_api/
 #实现接口的模块的放manifest文件的目录
 module_iml_manifest_dir = src/main/
 #实现模块.api接口文件的的目录(插件也会在syc阶段自动识别成src，让android sutido当作可编辑java文件，运行时会剔除这个目录)
