@@ -2,9 +2,9 @@
 ## 前言</br>
 每个app几乎都有红点业务，RedpointTree组件提供类似android 布局 xml 方式，来简化红点更新逻辑，并同时提供更好的扩展性<br><br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/jiagoutu.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块结构图(来自美团组件化)<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块（组件）结构图(来自美团组件化)<br><br>
 <br><br>
 
 
