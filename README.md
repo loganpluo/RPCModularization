@@ -218,7 +218,8 @@ https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization
 
 
 <br>
-## ~~模块支持单独debug run (暂停 不可用， 共用一个配置 两个mainfest merge问题)~~
+~~## 模块支持单独debug run (暂停 不可用， 共用一个配置 两个mainfest merge问题) <br>
+
 ```
 module_personalcenter模块为可以单独debug调试模块, 配置如下
 
