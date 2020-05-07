@@ -11,7 +11,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 ## 自动生成对外接口的api工程
 * 我们的目标是，读取模块里面特定目录下.api文件， copy并重命名.java文件 到 自动生成.api工程
 
-### step1: 引入插件
+### step1: 声明插件
 * 工程根目录下的build.gradle
 ```
 buildscript {
@@ -22,6 +22,15 @@ buildscript {
         classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
     }
 }
+
+```
+
+### stpe2: 模块的build.gradle引入 modularization插件
+* 该插件在syc阶段识别下面  module_iml_api_src = src/main/api/src/目录，能把.api文件当作java编辑,运行时会剔除这个目录
+* 还有个作用就是会扫描需要注册的接口 和 模块 完成自动注册，会在下面解说
+
+```
+apply plugin: 'com.github.rpc.modularization'
 
 ```
 
@@ -75,8 +84,82 @@ api project(":module_login_api")
 ```
 
 ## 模块通信、自动初始化、自动注册接口-实现
+我们的目标 <br>
+* 模块初始化继承特定接口，就自动完成初始化 <br>
+* 模块通信采用接口， 接口实现只需要 @Annatation就把 接口-实现关系 自动注册到接口中心 <br>
 
 
+### step1: 模块和app主工程的build.gradle 引入 rpc-modularization组件
+```
+implementation 'com.github.rpc.modularization:rpc-modularization:1.0.2'
+
+```
+
+### step2: 确认声明modularization插件
+
+```
+buildscript {
+    repositories {
+        maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
+    }
+    dependencies {
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
+    }
+}
+
+```
+
+### stpe3: app主工程的application的onCreate 初始化模块管理中心
+
+```
+public class MyApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        RPCModuleServiceManager.init(getApplicationContext());
+
+    }
+}
+```
+
+### step5: 
+
+### step5: 接口实现类 继承.api的接口，并且注解为 @ModuleService
+
+```
+@ModuleService
+public class LoginServiceImpl implements LoginService {
+    @Override
+    public String getUserName() {
+        return "loganpluo";
+    }
+}
+```
+
+### step6: 模块初始化类继承RPCModule接口
+```
+
+public class LoginModule implements RPCModule {
+    @Override
+    public void onInit(Context context) {
+        Log.d("LoginModule","onInit");
+    }
+}
+
+```
+
+### step7: 其他模块 依赖module_login_api， 调用接口LoginService
+```
+        String userName =
+                RPCModuleServiceManager.findService(LoginService.class).getUserName();
+
+        Toast.makeText(this,"userName:"+userName,Toast.LENGTH_LONG).show();
+
+```
+
+### step7: run
 
 ## step1: 模块接口服务中心，支持自动注册
 ```
