@@ -73,12 +73,12 @@ https://plugins.jetbrains.com/plugin/5918-asm-bytecode-outline
 
 java类型签名 https://www.jianshu.com/p/a1438b476e82 <br>
 
-####step5 build里面可以查看 执行 plugin-modularization的log （warn： 有时候又查看不到，clean又不行好奇怪）
+#### step5 build里面可以查看 执行 plugin-modularization的log （warn： 有时候又查看不到，clean又不行好奇怪）
 
-####step6 反编译apk里面的dex 成class
+#### step6 反编译apk里面的dex 成class
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/asm.png)<br>
 
-
-####step7 查看 编译的class
+#### step7 查看 编译的class
 
 javap -c D:\Hello.class<br>
 其他方式<br>
