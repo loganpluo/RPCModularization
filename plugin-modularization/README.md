@@ -92,4 +92,4 @@ javap -c D:\Hello.class<br>
 
 ### 需要优化的部分
 * 编译速度, 已经做了支持 include 指定扫描类 和 exclude过滤类，正则规则貌似有点问题，还需要验证下
-* 只有run app任务才执行查找类
+* 只有run app任务才执行查找类， upload library 发现也执行，这个再查询下原因，但是会修改失败
