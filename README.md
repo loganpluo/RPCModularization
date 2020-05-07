@@ -1,6 +1,6 @@
 # RPCModularization
 ## 前言</br>
-跨模块通信 采用 接口方式来进行，主要分为三个部分
+RPCModularization跨模块通信 采用 接口方式来进行，主要分为三个部分
 * 接口定义采用微信.api方式实现物理隔离，增量感知.api文件自动copy生成api工程
 * 模块继承RPCModule 自动实现初始化
 * 注解模块接口实现为 @ModuleService，自动注册接口-实现 到模块服务中心， 其他模块依赖api工程通过 模块服务中心调用其他模块
@@ -15,6 +15,8 @@
 # 快速接入
 ## Part1 自动生成对外接口的api工程
 * 我们的目标是，读取模块里面特定目录下.api文件， copy并重命名.java文件 到 自动生成.api工程
+
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/auto-create-api-project.png)<br>
 
 ### step1: 声明插件
 * 工程根目录下的build.gradle
