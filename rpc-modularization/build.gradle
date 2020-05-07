@@ -40,7 +40,7 @@ if(!isUploadPluginModularization){
         userOrg = 'loganpluo' // Bintray 账号名
         groupId = 'com.github.rpc.modularization'
         artifactId = 'rpc-modularization'
-        publishVersion = '1.0.2'
+        publishVersion = '1.0.3'
         desc = 'rpc-modularization for anroid'
         website = 'https://github.com/loganpluo/RPCModularization.git'
     }
