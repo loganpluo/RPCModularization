@@ -71,7 +71,7 @@ def autoCreateApiModule(String moduleName, String apiModuleName){
     List<File> apiFiles = new ArrayList<>();
     def ts = System.currentTimeMillis()
     findApiFiles(apiFileDir, apiFiles)
-    println("autoCreateApiModule findApiFiles cost:${System.currentTimeMillis() - ts}")
+    println("autoCreateApiModule findApiFiles apiFileDir：$apiFileDir cost:${System.currentTimeMillis() - ts}")
     if(apiFiles.isEmpty()){
         println("autoCreateApiModule apiFileDir:$apiFileDir  is empty")
         return

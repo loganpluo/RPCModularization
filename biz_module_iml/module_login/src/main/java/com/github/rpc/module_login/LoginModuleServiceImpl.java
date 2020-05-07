@@ -7,6 +7,11 @@ import com.github.rpc.module_login_api.Session;
 @ModuleService
 public class LoginModuleServiceImpl implements LoginModuleService {
     @Override
+    public String getUserName() {
+        return "loganpluo";
+    }
+
+    @Override
     public boolean isLogin() {
         return true;
     }
