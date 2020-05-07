@@ -1,9 +1,9 @@
 # RPCModularization
 ## 前言</br>
 跨模块通信 采用 接口方式来进行，主要分为三个部分
-* 接口定义采用微信.api方式，自动生成工程， 
+* 接口定义采用微信.api方式实现物理隔离，增量感知.api文件自动copy生成api工程
 * 模块继承RPCModule 自动实现初始化
-* 注解模块接口实现为 @ModuleService，自动注册接口-实现 到模块服务中心
+* 注解模块接口实现为 @ModuleService，自动注册接口-实现 到模块服务中心， 其他模块依赖api工程通过 模块服务中心调用其他模块
 
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/jiagoutu.png)<br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
