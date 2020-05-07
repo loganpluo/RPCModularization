@@ -19,7 +19,7 @@ buildscript {
         maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
     }
     dependencies {
-        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
     }
 }
 
@@ -106,7 +106,7 @@ buildscript {
         maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
     }
     dependencies {
-        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
     }
 }
 
