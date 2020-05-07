@@ -12,12 +12,49 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 * 我们的目标是，读取模块里面特定目录下.api文件， copy并重命名.java文件 到 自动生成.api工程
 
 ### step1: 引入插件
+* 工程根目录下的build.gradle
+```
+buildscript {
+    repositories {
+        maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
+    }
+    dependencies {
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
+    }
+}
+
+```
 
 ### step2: 在根目录gradle.properties 里面配置 自动生成.api工程的信息
 
+```
+
+#---------------auto_create_api_library.gradle的配置-----------------------
+#实现接口的模块放的父目录
+module_iml_base_path = ./
+#接口模块放的父目录
+module_api_base_path = ./
+#实现接口的模块的放manifest文件的目录
+module_iml_manifest_dir = src/main/
+#实现模块.api接口文件的的目录(插件也会在syc阶段自动识别成src，让android sutido当作可编辑java文件，运行时会剔除这个目录)
+module_iml_api_src = src/main/api/src/
+#接口模块名(包名) = 实现模块名(包名) + api_modulename_suffix
+api_modulename_suffix = _api
+#接口模块的build.gradle compileSdkVersion
+api_compile_sdkversion = 29
+#接口模块的build.gradle buildToolsVersion
+api_build_toolsversion = 29.0.2
+#接口模块的build.gradle minSdkVersion
+api_min_sdkversion = 19
+#接口模块的build.gradle targetSdkVersion
+api_min_targetversion = 29
+#--------------------------------------
+
+```
 
 ### step3: setting 里面引入auto_create_api_library.gradle 脚本
-
+* 主要是读取根目录gradle.properties的配置
+* copy .api接口
 
 ### stpe4: setting里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
 
