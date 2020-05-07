@@ -6,9 +6,9 @@ RPCModularization跨模块通信 采用 接口方式来进行，主要分为三�
 * 注解模块接口实现为 @ModuleService，自动注册接口-实现 到模块服务中心， 其他模块依赖api工程通过 模块服务中心调用其他模块
 
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/jiagoutu.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块（组件）结构图(来自美团组件化)<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块（组件）结构图(来自美团组件化)，Export module就是api接口工程<br><br>
 <br><br>
 
 
@@ -80,9 +80,12 @@ api_include ':module_login'
 过程如下
 * 读取根目录gradle.properties的配置
 * 生成api工程
-* 简单校验目录下.api文件是否有修改，有修改就全量copy .api接口到 api工程的src下（todo diff更新）
+* 简单校验目录下.api文件是否有修改，有修改就全量copy .api接口到 api工程的src下（todo diff更新）<br>
+  会在模块的根目录下面生成一个 api_lastmodified文件来记录.api文件最近修改时间，注意要保留commit提交<br>
 * AndroidManifest.xml、Gradle、GitIgnore 文件生成
 * 最后include api工程
+
+
 
 ### step6: 其他模块引入.api工程采用常规的api 或者 implement来引入
 
@@ -151,7 +154,7 @@ public interface LoginService{
 
 ```
 @ModuleService
-public class LoginServiceImpl implements LoginService {
+public class LoginModuleServiceImpl implements LoginService {
     @Override
     public String getUserName() {
         return "loganpluo";
@@ -208,50 +211,21 @@ public class MyApplication extends Application {
 2020-05-07 21:52:05.216 6525-6525/com.github.rpc.modularization I/RPCModuleServiceManager: registerModuleService serviceImpl:com.github.rpc.module_login.LoginModuleServiceImpl
 ```
 
-* 原理就是 利用Transform Api 阶段扫描 指定calss，asm 字节码修改自动注入模块初始化和接口服务绑定代码
+* 原理就是 利用Transform Api 阶段(class ->dex 之前)扫描 指定calss，asm 字节码修改自动注入模块初始化和接口服务绑定代码
+
+效果反编译class如下：
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/asm-java.png)<br>
 
 插件介绍：
-https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization/README.md
+https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization/README.md <br>
 
 
-
-
-
-## 模块支持单独debug run (暂停 不可用， 共用一个配置 两个mainfest merge问题)
-```
-module_personalcenter模块为可以单独debug调试模块, 配置如下
-
-(1) 根目录gradle.properties 配置主工程名, plugin-modularization用来支持library可以run
-    mainAppName = app
-
-(2) app主工程的build.gradle ,把com.android.application替换成如下插件，能够动态依赖单独运行的模块
-    apply plugin: 'com.github.rpc.modularization'
-(3) app主工程的build.gradle, 动态添加业务实现模块(config阶段，)
-    addModule 'module_personalcenter'
-
-(4) module_personalcenter 模式支持单独debug调试 build.gradle 配置
-    apply plugin: 'com.github.rpc.modularization' 替换 apply plugin: 'com.android.library'
-
-(5) module_personalcenter 模式支持单独debug调试 gradle.properties 配置
-    isDebugAlone=true
-    moduleApplicationId=com.github.rpc.module_personalcenter.run
-
-(6) module_personalcenter 模式支持单独debug调试， 测试debug目录调试代码 todo 调用还有些问题
-    新建 src/main/debug 目录, 相当于个application工程目录
-    src/main/debug/java 新建对应包名，测试activity
-    src/main/debug/res 资源，主要加前缀module_personalcenter
-    src/main/debug/AndroidManifest.xml 同样的包名, 定义 application 和指定测试入口activity
-
-```
+<br>
 
 
 
 
 # 参考
-* 模块结构图(来自美团组件化)
-<br>
-![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
-<br>
-和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
-RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
+美团的组件化 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
+cc组件化  <br>
 
