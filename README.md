@@ -4,7 +4,7 @@
 ![](https://raw.githubusercontent.com/loganpluo/RPCModularization/master/pic/module-service.png)
 
 <br>
-![](/pic/module-service.png)
+![你妹](https://github.com/loganpluo/RPCModularization/raw/master/pic/module-service.png)
 <br>
 和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
 RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
