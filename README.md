@@ -52,14 +52,27 @@ api_min_targetversion = 29
 
 ```
 
-### step3: setting 里面引入auto_create_api_library.gradle 脚本
-* 主要是读取根目录gradle.properties的配置
-* copy .api接口
+### step3: settings.gradle 里面引入auto_create_api_library.gradle 脚本
 
-### stpe4: setting里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
+```
+apply from:'auto_create_api_library.gradle'
+include ':app'
+api_include ':module_login'
+```
+
+### stpe4: settings.gradle里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
+
+* 主要是读取根目录gradle.properties的配置
+* 生成api工程
+* 简单校验目录下.api文件是否有修改，有修改就全量copy .api接口到 api工程的src下（todo diff更新）
+* AndroidManifest.xml、Gradle、GitIgnore 文件生成
+* 最后include api工程
 
 ### step5: 其他模块引入.api工程采用常规的api 或者 implement来引入
 
+```
+api project(":module_login_api")
+```
 
 ## 模块通信、自动初始化、自动注册接口-实现
 
