@@ -1,10 +1,11 @@
 # RPCModularization
-* 模块结构图(来自美团组件化)
-<br>
-![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
-<br>
-和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
-RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
+## 前言</br>
+每个app几乎都有红点业务，RedpointTree组件提供类似android 布局 xml 方式，来简化红点更新逻辑，并同时提供更好的扩展性<br><br>
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/jiagoutu.png)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块结构图(来自美团组件化)<br><br>
+<br><br>
 
 
 # 快速接入
