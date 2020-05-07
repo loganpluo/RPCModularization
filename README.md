@@ -208,9 +208,9 @@ public class MyApplication extends Application {
 2020-05-07 21:52:05.216 6525-6525/com.github.rpc.modularization I/RPCModuleServiceManager: registerModuleService serviceImpl:com.github.rpc.module_login.LoginModuleServiceImpl
 ```
 
-* 原理就是 利用Transform Api 阶段扫描 指定calss，asm 字节码修改自动注入模块初始化和接口服务绑定代码
+* 原理就是 利用Transform Api 阶段(class ->dex 之前)扫描 指定calss，asm 字节码修改自动注入模块初始化和接口服务绑定代码
 
-效果如下：
+效果反编译class如下：
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/asm-java.png)<br>
 
 插件介绍：
