@@ -15,13 +15,16 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
 ### step2: 在根目录gradle.properties 里面配置 自动生成.api工程的信息
 
+
 ### step3: setting 里面引入auto_create_api_library.gradle 脚本
 
-### stpe4: setting里面使用 api_include 关键字来引入 模块， syc下会 自动读取.api文件 生成.api工程
 
-### 
+### stpe4: setting里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
 
-### 模块通信
+### step5: 其他模块引入.api工程采用常规的api 或者 implement来引入
+
+
+## 模块通信、自动初始化、自动注册接口-实现
 
 
 
