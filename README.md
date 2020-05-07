@@ -6,7 +6,26 @@
 和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
 RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
-## step1: 模块接口服务中心，支持自动注册（done）
+
+# 快速接入
+## 自动生成对外接口的api工程
+* 我们的目标是，读取模块里面特定目录下.api文件， copy并重命名.java文件 到 自动生成.api工程
+
+### step1: 引入插件
+
+### step2: 在根目录gradle.properties 里面配置 自动生成.api工程的信息
+
+### step3: setting 里面引入auto_create_api_library.gradle 脚本
+
+### stpe4: setting里面使用 api_include 关键字来引入 模块， syc下会 自动读取.api文件 生成.api工程
+
+### 
+
+### 模块通信
+
+
+
+## step1: 模块接口服务中心，支持自动注册
 ```
     //根目录build.gradle引入 自动化注册的插件
     buildscript {
