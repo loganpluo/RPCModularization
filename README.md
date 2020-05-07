@@ -80,9 +80,12 @@ api_include ':module_login'
 过程如下
 * 读取根目录gradle.properties的配置
 * 生成api工程
-* 简单校验目录下.api文件是否有修改，有修改就全量copy .api接口到 api工程的src下（todo diff更新）
+* 简单校验目录下.api文件是否有修改，有修改就全量copy .api接口到 api工程的src下（todo diff更新）<br>
+  会在模块的根目录下面生成一个 api_lastmodified文件来记录.api文件最近修改时间，注意要保留commit提交<br>
 * AndroidManifest.xml、Gradle、GitIgnore 文件生成
 * 最后include api工程
+
+
 
 ### step6: 其他模块引入.api工程采用常规的api 或者 implement来引入
 
