@@ -8,7 +8,7 @@ RPCModularization跨模块通信 采用 接口方式来进行，主要分为三�
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/jiagoutu.png)<br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块（组件）结构图(来自美团组件化)<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块（组件）结构图(来自美团组件化)，Export module就是api接口工程<br><br>
 <br><br>
 
 
