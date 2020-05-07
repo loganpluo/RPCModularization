@@ -40,6 +40,7 @@ src/main/groovy/com.github.rpc.modularization.plugin
     InitModuleCodeGenerator.groovy -- 模块初始化字节码插入代码类，把需要注入的class，到被修改的class的方法里面
     RegisterModuleServiceClassModifier.groovy -- 模块接口服务绑定字节码修改处理类，得到被修改的class 和 需要注入的class
     RegisterModuleServiceCodeGenerator.groovy -- 模模块接口服务绑定字节码插入代码处理类，把需要注入的class，到被修改的class的方法里面
+    ApiDirHelper.groovy -- 自动识别 gradle.properties配置的module_iml_api_src的.api目录为src目录
 ```
 
 
