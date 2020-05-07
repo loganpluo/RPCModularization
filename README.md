@@ -8,7 +8,7 @@ RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
 
 # 快速接入
-## 自动生成对外接口的api工程
+## 1、自动生成对外接口的api工程
 * 我们的目标是，读取模块里面特定目录下.api文件， copy并重命名.java文件 到 自动生成.api工程
 
 ### step1: 声明插件
@@ -34,7 +34,7 @@ apply plugin: 'com.github.rpc.modularization'
 
 ```
 
-### step2: 在根目录gradle.properties 里面配置 自动生成.api工程的信息
+### step3: 在根目录gradle.properties 里面配置 自动生成.api工程的信息
 
 ```
 
@@ -61,7 +61,7 @@ api_min_targetversion = 29
 
 ```
 
-### step3: settings.gradle 里面引入auto_create_api_library.gradle 脚本
+### step4: settings.gradle 里面引入auto_create_api_library.gradle 脚本
 
 ```
 apply from:'auto_create_api_library.gradle'
@@ -69,7 +69,7 @@ include ':app'
 api_include ':module_login'
 ```
 
-### stpe4: settings.gradle里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
+### stpe5: settings.gradle里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
 
 * 主要是读取根目录gradle.properties的配置
 * 生成api工程
@@ -77,13 +77,13 @@ api_include ':module_login'
 * AndroidManifest.xml、Gradle、GitIgnore 文件生成
 * 最后include api工程
 
-### step5: 其他模块引入.api工程采用常规的api 或者 implement来引入
+### step6: 其他模块引入.api工程采用常规的api 或者 implement来引入
 
 ```
 api project(":module_login_api")
 ```
 
-## 模块通信、自动初始化、自动注册接口-实现
+## 2、模块通信、自动初始化、自动注册接口-实现
 我们的目标 <br>
 * 模块初始化继承特定接口，就自动完成初始化 <br>
 * 模块通信采用接口， 接口实现只需要 @Annatation就把 接口-实现关系 自动注册到接口中心 <br>
@@ -191,7 +191,7 @@ public class MyApplication extends Application {
 
 ```
 
-### step7: run
+### step9: run
 你会惊喜的发现一下日志, 模块自动初始化完成， 接口和 实现自动注册到 模块管理中心了
 ```
 2020-05-07 21:52:05.215 6525-6525/com.github.rpc.modularization D/LoginModule: LoginModule onInit
