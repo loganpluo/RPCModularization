@@ -1,10 +1,14 @@
 # RPCModularization
 ## 前言</br>
-每个app几乎都有红点业务，RedpointTree组件提供类似android 布局 xml 方式，来简化红点更新逻辑，并同时提供更好的扩展性<br><br>
+跨模块通信 采用 接口方式来进行，主要分为三个部分
+* 接口定义采用微信.api方式实现物理隔离，增量感知.api文件自动copy生成api工程
+* 模块继承RPCModule 自动实现初始化
+* 注解模块接口实现为 @ModuleService，自动注册接口-实现 到模块服务中心， 其他模块依赖api工程通过 模块服务中心调用其他模块
+
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/jiagoutu.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块组件架构图<br><br>
 ![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块结构图(来自美团组件化)<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;模块（组件）结构图(来自美团组件化)<br><br>
 <br><br>
 
 
