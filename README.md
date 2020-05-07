@@ -61,7 +61,7 @@ api_min_targetversion = 29
 
 ```
 
-### step4: settings.gradle 里面引入auto_create_api_library.gradle 脚本
+### step4: settings.gradle 里面引入auto_create_api_library.gradle 脚本，api_include 关键字来引入 模块
 
 ```
 apply from:'auto_create_api_library.gradle'
@@ -69,9 +69,9 @@ include ':app'
 api_include ':module_login'
 ```
 
-### stpe5: settings.gradle里面使用 api_include 关键字来引入 模块， syc下会 自动读取配置目录下的.api文件 生成.api工程
-
-* 主要是读取根目录gradle.properties的配置
+### stpe5: syc下配置会 自动读取配置的module_login目录下的.api文件 生成.api工程
+过程如下
+* 读取根目录gradle.properties的配置
 * 生成api工程
 * 简单校验目录下.api文件是否有修改，有修改就全量copy .api接口到 api工程的src下（todo diff更新）
 * AndroidManifest.xml、Gradle、GitIgnore 文件生成
@@ -80,7 +80,9 @@ api_include ':module_login'
 ### step6: 其他模块引入.api工程采用常规的api 或者 implement来引入
 
 ```
+
 api project(":module_login_api")
+
 ```
 
 ## 2、模块通信、自动初始化、自动注册接口-实现
@@ -91,6 +93,7 @@ api project(":module_login_api")
 
 ### step1: 模块和app主工程的build.gradle 引入 rpc-modularization组件
 ```
+
 implementation 'com.github.rpc.modularization:rpc-modularization:1.0.2'
 
 ```
