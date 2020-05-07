@@ -44,17 +44,17 @@ src/main/groovy/com.github.rpc.modularization.plugin
 
 
 ### 插件开发
+#### step1 根目录 build.gradle plugin-modularization插件修改成本地仓库引用
 ```
-step1 根目录 build.gradle plugin-modularization插件修改成本地仓库引用
-
     repositories {
         maven {//本地Maven仓库地址找自定义的插件 todo 后面放到远程maven
             url uri('repos')
         }
     }
+```
 
-step2 plugin-modularization插件发布地址改成本地 build.gradle， 方便频繁upload进行调试
-
+#### step2 plugin-modularization插件发布地址改成本地 build.gradle， 方便频繁upload进行调试
+```
     uploadArchives {
         repositories {
             mavenDeployer {
@@ -62,34 +62,34 @@ step2 plugin-modularization插件发布地址改成本地 build.gradle， 方便
             }
         }
     }//
-    
-step3 直接查看目标 java文件的字节码 as的插件
+```
+
+#### step3 直接查看目标 java文件的字节码 as的插件
 https://plugins.jetbrains.com/plugin/5918-asm-bytecode-outline   
 
-step4 asm编写修改字节码的指令，api和最后字节码结构一一对应
-例如 RegisterModuleServiceCodeGenerator 
-可参考指引：https://blog.csdn.net/ouyang_peng/article/details/100566678
+#### step4 asm编写修改字节码的指令，api和最后字节码结构一一对应
+例如 RegisterModuleServiceCodeGenerator  <br>
+可参考指引：https://blog.csdn.net/ouyang_peng/article/details/100566678 <br>
 
-java类型签名 https://www.jianshu.com/p/a1438b476e82
+java类型签名 https://www.jianshu.com/p/a1438b476e82 <br>
 
-step5 build里面可以查看 执行 plugin-modularization的log （warn： 有时候又查看不到，clean又不行好奇怪）
+####step5 build里面可以查看 执行 plugin-modularization的log （warn： 有时候又查看不到，clean又不行好奇怪）
 
-step6 反编译apk里面的dex 成class
+####step6 反编译apk里面的dex 成class
 
 
-step7 查看 编译的class
+####step7 查看 编译的class
 
-javap -c D:\Hello.class
-其他方式
-    https://blog.csdn.net/kwame211/article/details/77677662
-    http://set.ee/jbe/
+javap -c D:\Hello.class<br>
+其他方式<br>
+    https://blog.csdn.net/kwame211/article/details/77677662 <br>
+    http://set.ee/jbe/<br>
 
-step8 有问题的化，比对编译出来的class 和目标的class结构，可以看出
-
+#### step8 有问题的化，比对编译出来的class 和目标的class结构，可以看出
 
 
 ```    
 
 ### 需要优化的部分
 * 编译速度, 已经做了支持 include 指定扫描类 和 exclude过滤类；  todo 缓存编译速度优化
-
+* 只有run app任务才执行查找类
