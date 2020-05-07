@@ -19,6 +19,7 @@ classmodifier{
 //           ]
           , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
                  'androidx.'.replaceAll("\\.", "/") + ".*",
+                   "androidx.*",
                   'android.support'.replaceAll("\\.", "/") + ".*"
             ]
         ],
@@ -34,6 +35,7 @@ classmodifier{
 //            ]
           , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
                  'androidx.'.replaceAll("\\.", "/") + ".*",
+                  "androidx.*",
                   'android.support'.replaceAll("\\.", "/") + ".*"
             ]
         ]
