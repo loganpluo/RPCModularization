@@ -149,7 +149,7 @@ public class LoginServiceImpl implements LoginService {
 }
 ```
 
-### step6: 模块初始化类继承RPCModule接口
+### step7: 模块初始化类继承RPCModule接口
 ```
 
 public class LoginModule implements RPCModule {
@@ -161,7 +161,7 @@ public class LoginModule implements RPCModule {
 
 ```
 
-### step7: 其他模块 依赖module_login_api， 调用接口LoginService
+### step8: 其他模块 依赖module_login_api， 调用接口LoginService
 
 ```
         String userName =
@@ -171,11 +171,13 @@ public class LoginModule implements RPCModule {
 
 ```
 
-* findService 支持 参数 ModuleServiceType.SingleInstance 全局app单利接口服务
-* findService 支持 参数 ModuleServiceType.New 每次new 接口实现服务
-* 可以在初始化指定默认findService(LoginService.class)的构建服务默认方式
+* findService(Class<ModuleService> service,ModuleServiceType moduleServiceType) <br>
+   参数 ModuleServiceType.SingleInstance 全局app单利接口服务<br>
+   参数 ModuleServiceType.New 每次new 接口实现服务<br>
+* findService(Class<ModuleService> service) <br>
+  默认采用ModuleServiceType.New方式构建服务，可以在初始化指定默认findService(LoginService.class)的构建服务默认方式, 如下
+    
 ```
-
 public class MyApplication extends Application {
 
     @Override
@@ -235,8 +237,11 @@ module_personalcenter模块为可以单独debug调试模块, 配置如下
 
 
 
+# 参考
+* 模块结构图(来自美团组件化)
+<br>
+![](https://github.com/loganpluo/RPCModularization/blob/master/pic/module-service.png)
+<br>
+和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html  <br>
+RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）
 
-
-和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html
-1、RPCModule(模块初始化) + RPCModuleService（模块暴露的接口服务）<br>
-RPCModule需要感知生命周期不<br>
