@@ -1,8 +1,6 @@
 # RPCModularization
-* 模块结构图(来自美团组件化)
 <br>
 ![](https://raw.githubusercontent.com/loganpluo/RPCModularization/master/pic/module-service.png)
-
 <br>
 ![你妹](https://github.com/loganpluo/RPCModularization/raw/master/pic/module-service.png)
 <br>
