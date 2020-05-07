@@ -124,9 +124,20 @@ public class MyApplication extends Application {
 }
 ```
 
-### step5: 
+### step4: 在实现模块的api目录下，添加.api文件，最好建个和实现模块包名一样
 
-### step5: 接口实现类 继承.api的接口，并且注解为 @ModuleService
+```
+public interface LoginService{
+    String getUserName();
+}
+```
+
+### step5: module_login模块的build.gradle引入 自动生成的 module_login_api工程
+```
+    api project(":module_login_api")
+```
+
+### step6: module_login模块 接口实现类 继承.api的接口，并且注解为 @ModuleService
 
 ```
 @ModuleService
@@ -151,6 +162,7 @@ public class LoginModule implements RPCModule {
 ```
 
 ### step7: 其他模块 依赖module_login_api， 调用接口LoginService
+
 ```
         String userName =
                 RPCModuleServiceManager.findService(LoginService.class).getUserName();
@@ -159,89 +171,41 @@ public class LoginModule implements RPCModule {
 
 ```
 
+* findService 支持 参数 ModuleServiceType.SingleInstance 全局app单利接口服务
+* findService 支持 参数 ModuleServiceType.New 每次new 接口实现服务
+* 可以在初始化指定默认findService(LoginService.class)的构建服务默认方式
+```
+
+public class MyApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        RPCModuleServiceManager.init(getApplicationContext(), ModuleServiceType.SingleInstance);
+
+    }
+}
+
+```
+
 ### step7: run
-
-## step1: 模块接口服务中心，支持自动注册
+你会惊喜的发现一下日志, 模块自动初始化完成， 接口和 实现自动注册到 模块管理中心了
 ```
-    //根目录build.gradle引入 自动化注册的插件
-    buildscript {
-     dependencies {
-            classpath 'com.github.rpc.modularization:plugin-modularization:1.0.0'
-      }    
-    }
-
-    
-    // app/build.gradle引入modularization.gradle 配置，实现
-    apply from: rootProject.file('modularization.gradle')
-    
-
-    // 初始化组件
-    public class MyApplication extends Application {
-
-        @Override
-        public void onCreate() {
-            super.onCreate();
-        	RPCModuleServiceManager.init(getApplicationContext());
-        }
-    }
-
-    //TopicModuleService对外接口 ，暂时手动放到 biz_module_api/module_topic_api模块接口工程里面
-    public interface TopicModuleService  {
-
-        void getMyTopicList(GetMyTopicListCallBack getMyTopicListCallBack);
-
-    }
-
-    //biz_module_iml/module_topic 模块接口实现工程里面实现TopicModuleServiceImpl, 
-    //注解@ModuleService自动注册到RPCModuleServiceManager， 字节码asm 到initModuleServices方法里面，调用registerModuleService(Class<?> serviceImpl)
-    @ModuleService
-    public class TopicModuleServiceImpl implements TopicModuleService {
-
-        @Override
-        public void getMyTopicList(GetMyTopicListCallBack getMyTopicListCallBack) {
-            LoginModuleService loginModuleService = RPCModuleServiceManager.findService(LoginModuleService.class);
-
-            //拦截器其实也是可以支持，采用动态代理来构建LoginModuleService， 统一判断是否需要登录不
-            List<Topic> topics = new ArrayList<>();
-            if(loginModuleService.isLogin()){
-                //cost query
-                for(int i=0; i<10; i++){
-                    Topic topic = new Topic();
-                    topic.setName("话题"+i);
-                    topics.add(topic);
-                }
-                getMyTopicListCallBack.result(0, "", topics);
-            }else{
-                getMyTopicListCallBack.result(0, "", topics);
-            }
-
-
-        }
-    }
-    
-    //其他模块获取 getMyTopicList
-    //build.gradle 配置依赖 模块接口工程
-    api project(':module_topic_api')
-
-    //从模块接口服务中心 获取TopicModuleService
-    RPCModuleServiceManager.findService(TopicModuleService.class).getMyTopicList(new GetMyTopicListCallBack() {
-        @Override
-        public void result(int code, String msg, List<Topic> topics) {
-        }
-    }    
-
-    // 模块初始化 注册模块对外接口实现 到 模块接口服务中心， plugin-modularization插件 asm自动注册到initModules(Context context)
-    public class TopicModule implements RPCModule {
-        @Override
-        public void onInit(Context context) {
-            
-        }
-    }
-
-
-
+2020-05-07 21:52:05.215 6525-6525/com.github.rpc.modularization D/LoginModule: LoginModule onInit
+2020-05-07 21:52:05.216 6525-6525/com.github.rpc.modularization I/RPCModuleServiceManager: registerModuleService serviceImpl:com.github.rpc.module_login.LoginModuleServiceImpl
 ```
-## step2: 模块支持单独debug run (stop， 共用一个配置 两个mainfest merge问题)
+
+* 原理就是 利用Transform Api 阶段扫描 指定calss，asm 字节码修改自动注入模块初始化和接口服务绑定代码
+
+插件介绍：
+https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization/README.md
+
+
+
+
+
+## 模块支持单独debug run (暂停 不可用， 共用一个配置 两个mainfest merge问题)
 ```
 module_personalcenter模块为可以单独debug调试模块, 配置如下
 
@@ -268,13 +232,9 @@ module_personalcenter模块为可以单独debug调试模块, 配置如下
 
 ```
 
-### 字节码修改自动注入模块初始化和接口服务绑定代码
-插件介绍：
-https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization/README.md
 
-## step3: 模块接口工程自动生成（todo）
-准备初步采用setting里面调用函数 来动态copy library里面 .api 文件 生成library工程，然后include进来, 实现微信的.api<br>
-微信.api 不支持kotlin、资源文件，是直接从模块特定接口目录(支持识别)copy 生成接口工程，最好是增量生成aar包
+
+
 
 
 和美团的组件化结构类似 https://tech.meituan.com/2018/12/20/modular-event.html
