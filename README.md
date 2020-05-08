@@ -104,7 +104,7 @@ api project(":module_login_api")
 ### step1: 模块和app主工程的build.gradle 引入 rpc-modularization组件
 ```
 
-implementation 'com.github.rpc.modularization:rpc-modularization:1.0.2'
+implementation 'com.github.rpc.modularization:rpc-modularization:1.0.3'
 
 ```
 
@@ -112,9 +112,6 @@ implementation 'com.github.rpc.modularization:rpc-modularization:1.0.2'
 
 ```
 buildscript {
-    repositories {
-        maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
-    }
     dependencies {
         classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
     }
