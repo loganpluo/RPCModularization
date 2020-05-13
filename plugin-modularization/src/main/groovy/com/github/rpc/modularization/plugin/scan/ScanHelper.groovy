@@ -25,7 +25,9 @@ class ScanHelper {
      * @param path
      * @param project
      */
-    static void scanDirectory(String path, String root, List<ClassModifier> classModifierList,
+    static void scanDirectory(String path,
+                              String root,
+                              List<ClassModifier> classModifierList,
                               File destFile){
         LogUtil.d(TAG,"test")
         File dir = new File(path)
@@ -33,11 +35,10 @@ class ScanHelper {
             dir.eachFileRecurse { File file ->
                 String filePath = file.absolutePath
                 LogUtil.d(TAG,"filePath: $filePath ， file.isFile:${file.isFile()}")
-                if(file.isFile()){//
+                if(file.isFile()){
                     scanClassFile(file, root, classModifierList, destFile)
                 }
             }
-            //directoryInput.changedFiles
         }
     }
 

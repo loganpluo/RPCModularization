@@ -13,6 +13,5 @@ public class TestModule implements RPCModule {
         //todo 自动注册
 //        RPCModuleServiceManager.getInstance().registerService(LoginModuleService.class, LoginModuleServiceImpl.class);
         Log.d("LoginModule","LoginModule onInit");
-
     }
 }

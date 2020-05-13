@@ -53,9 +53,10 @@ class InsertCodeHelper{
     //处理jar包中的class代码注入
     private static File generateCodeIntoJarFile(File jarFile,ClassModifier classModifier) {
         if (jarFile) {
+            //生成一个临时文件 存储被修改的class后的jar包
             def optJar = new File(jarFile.getParent(), jarFile.name + ".opt")
-            if (optJar.exists())
-                optJar.delete()
+            if (optJar.exists()) optJar.delete()
+
             def file = new JarFile(jarFile)
             Enumeration enumeration = file.entries()
             JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(optJar))

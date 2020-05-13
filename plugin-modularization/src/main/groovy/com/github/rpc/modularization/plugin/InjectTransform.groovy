@@ -4,6 +4,7 @@ import com.android.build.api.transform.Context
 import com.android.build.api.transform.DirectoryInput
 import com.android.build.api.transform.JarInput
 import com.android.build.api.transform.QualifiedContent
+import com.android.build.api.transform.Status
 import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
@@ -59,7 +60,7 @@ class InjectTransform extends Transform {
     // 当前Transform是否支持增量编译
     @Override
     boolean isIncremental() {
-        return false
+        return true
     }
 
     // 核心方法
@@ -71,71 +72,34 @@ class InjectTransform extends Transform {
                    boolean isIncremental) throws IOException, TransformException, InterruptedException {
         def startTs = System.currentTimeMillis()
         extension.loadConfig()
-        println "-------------------- ${getName()} transform 开始 isIncremental：${isIncremental}-------------------"
+        println "-------------------- ${getName()} transform 开始 isIncremental：${isIncremental}, " +
+                "isCacheable:${isCacheable()}-------------------"
 
         if("true" == mProject.getProperties().get("isDebugPMLog")){
             LogUtil.isDebugPMLog = true
             println("isDebugPMLog true")
         }
 
-        //每次得到 List<ClassModifier>
-
         println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.type}"
-        // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
-        // 找到
+
         LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
+
+        // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each {
             TransformInput input ->
                 // 遍历文件夹
                 //文件夹里面包含的是我们手写的类以及R.class、BuildConfig.class以及R$XXX.class等
-                //directoryInput.changedFiles.isEmpty() 这个是不是增量
-                LogUtil.i(TAG,"directoryInputs.changedFiles.isEmpty: ${input.directoryInputs.changedFiles.isEmpty()}")
-                input.directoryInputs.each {
-                    DirectoryInput directoryInput ->
-//                        // 注入代码
-                        LogUtil.d(TAG,"scanDirectory absolutePath:${directoryInput.file.absolutePath}")
-
-                        // 获取输出目录
-                        def dest = outputProvider.getContentLocation(directoryInput.name,
-                                directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
-                        String root = directoryInput.file.absolutePath
-                        if (!root.endsWith(File.separator)) root += File.separator
-
-                        LogUtil.d(TAG,"scanDirectory root:$root")
-                        ScanHelper.scanDirectory(directoryInput.file.absolutePath,
-                                                root, extension.classModifiers,
-                                                dest)
-
-                        println("directory inputname:${directoryInput.file.absolutePath}" +
-//                                " inputType.contentTypes:${directoryInput.contentTypes}" +
-//                                " inputType.scopes:${directoryInput.scopes}" +
-                                " output dest: $dest.absolutePath")
-                        // 将input的目录复制到output指定目录
-                        FileUtils.copyDirectory(directoryInput.file, dest)
-                }
+                scanDirectoryInputs(isIncremental,
+                                    outputProvider,
+                                    input.directoryInputs)
 
                 //对类型为jar文件的input进行遍历
-                input.jarInputs.each {
-                        //jar文件一般是第三方依赖库jar文件
-                    JarInput jarInput ->
-                        // 重命名输出文件（同目录copyFile会冲突）
-                        def jarName = jarInput.name
-//                        println("jar: $jarInput.file.absolutePath")
-                        def md5Name = DigestUtils.md5Hex(jarInput.file.absolutePath)
-                        if (jarName.endsWith('.jar')) {
-                            jarName = jarName.substring(0, jarName.length() - 4)
-                        }
-                        def dest = outputProvider.getContentLocation(jarName + md5Name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
-
-                        ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
-
-                        println("jar jarInput：${jarInput.file.absolutePath} " +
-                                "output jarName:$jarName, md5Name:$md5Name, dest: $dest.absolutePath")
-
-                        FileUtils.copyFile(jarInput.file, dest)
-                }
+                scanJarInputs(isIncremental,
+                              outputProvider,
+                              input.jarInputs)
         }
 
+        //根据扫描收集到信息 进行 class的修改
         extension.classModifiers.each {
             if(it.hasWholeInfo()){
                 InsertCodeHelper.insertInitCodeTo(it)
@@ -147,6 +111,94 @@ class InjectTransform extends Transform {
 
         long cost = System.currentTimeMillis() - startTs
         println "--------------------- ${getName()} transform cost:$cost 结束-------------------"
+    }
+
+    /**
+     * 扫描包含class的目录
+     * 文件夹里面包含的是我们手写的类以及R.class、BuildConfig.class以及R$XXX.class等
+     * @param directoryInputs
+     */
+    void scanDirectoryInputs(boolean isIncremental,
+                             TransformOutputProvider outputProvider,
+                             Collection<DirectoryInput> directoryInputs){
+        LogUtil.i(TAG,"scanDirectory.changedFiles.isEmpty: ${directoryInputs.changedFiles.isEmpty()}")
+        LogUtil.d(TAG,"input.directoryInputs.size:${directoryInputs.size()}")
+
+        for(DirectoryInput directoryInput : directoryInputs){
+
+            // 注入代码
+            LogUtil.d(TAG,"scanDirectory path:${directoryInput.file.absolutePath} " +
+                    "isIncremental：$isIncremental "+
+                    "directoryInput.changedFiles.size:${directoryInput.changedFiles.size()} ")
+
+            //增量编译 目录没有变化则无需copy
+//            if(isIncremental && directoryInput.changedFiles.isEmpty()){
+//                continue
+//            }
+
+            // 获取输出目录
+            def dest = outputProvider.getContentLocation(directoryInput.name,
+                    directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
+            String root = directoryInput.file.absolutePath
+            if (!root.endsWith(File.separator)) root += File.separator
+
+            LogUtil.d(TAG,"scanDirectory root:$root")
+
+            //增量编译 有变化 则只需要读取变化的文件修改class
+            if(isIncremental && !directoryInput.changedFiles.isEmpty()){
+                LogUtil.d(TAG,"scanDirectory changedFile:${it}")
+                directoryInput.changedFiles.each { fileList ->
+                    def file = fileList.key
+                    if (fileList.value == Status.CHANGED || fileList.value == Status.ADDED) {
+                        ScanHelper.scanClassFile(file,
+                                root, extension.classModifiers,
+                                dest)
+                    }
+                }
+            }else{
+                ScanHelper.scanDirectory(directoryInput.file.absolutePath,
+                        root, extension.classModifiers,
+                        dest)
+            }
+
+            // 将input的目录复制到output指定目录
+            FileUtils.copyDirectory(directoryInput.file, dest)
+        }
+    }
+
+    /**
+     * 扫描jars包（library / 第三方 jar包）
+     */
+    void scanJarInputs(boolean isIncremental,
+                       TransformOutputProvider outputProvider,
+                       Collection<JarInput> jarInputs){
+        LogUtil.d(TAG,"input.jarInputs.size:${jarInputs.size()}")
+        for(JarInput jarInput : jarInputs){
+
+            // 重命名输出文件（同目录copyFile会冲突）
+            def jarName = jarInput.name
+            println("jar name: $jarInput.name, isIncremental：$isIncremental jarInput.status: ${jarInput.status}")
+
+            //增量编译 没有变化的返回NOTCHANGED, 则无需copy处理
+//            if(isIncremental && jarInput.status == Status.NOTCHANGED){
+//                LogUtil.d(TAG,"jar name: $jarInput.name, NOTCHANGED")
+//                break
+//            }
+
+            def md5Name = DigestUtils.md5Hex(jarInput.file.absolutePath)
+            if (jarName.endsWith('.jar')) {
+                jarName = jarName.substring(0, jarName.length() - 4)
+            }
+            //jar name: :module_test, jarInput.status: CHANGED
+            def dest = outputProvider.getContentLocation(jarName + md5Name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
+
+            println("jar jarInput：${jarInput.file.absolutePath} " +
+                    "output jarName:$jarName, md5Name:$md5Name, dest: $dest.absolutePath")
+
+            ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
+
+            FileUtils.copyFile(jarInput.file, dest)
+        }
     }
 
     @Override

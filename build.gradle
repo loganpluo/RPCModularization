@@ -11,9 +11,9 @@ ext{
 buildscript {
     
     repositories {
-//        maven {//本地Maven仓库地址找自定义的插件
-//            url uri('repos')
-//        }
+        maven {//本地Maven仓库地址找自定义的插件
+            url uri('repos')
+        }
         maven{ url 'https://maven.aliyun.com/repository/google' }
         maven{ url'https://maven.aliyun.com/repository/jcenter'}
         
