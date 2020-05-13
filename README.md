@@ -47,9 +47,9 @@ apply plugin: 'com.github.rpc.modularization'
 
 #---------------auto_create_api_library.gradle的配置-----------------------
 #实现接口的模块放的父目录
-module_iml_base_path = ./
+module_iml_base_path = biz_module_iml/
 #接口模块放的父目录
-module_api_base_path = ./
+module_api_base_path = biz_module_api/
 #实现接口的模块的放manifest文件的目录
 module_iml_manifest_dir = src/main/
 #实现模块.api接口文件的的目录(插件也会在syc阶段自动识别成src，让android sutido当作可编辑java文件，运行时会剔除这个目录)
@@ -104,7 +104,7 @@ api project(":module_login_api")
 ### step1: 模块和app主工程的build.gradle 引入 rpc-modularization组件
 ```
 
-implementation 'com.github.rpc.modularization:rpc-modularization:1.0.2'
+implementation 'com.github.rpc.modularization:rpc-modularization:1.0.3'
 
 ```
 
@@ -112,9 +112,6 @@ implementation 'com.github.rpc.modularization:rpc-modularization:1.0.2'
 
 ```
 buildscript {
-    repositories {
-        maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
-    }
     dependencies {
         classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
     }
