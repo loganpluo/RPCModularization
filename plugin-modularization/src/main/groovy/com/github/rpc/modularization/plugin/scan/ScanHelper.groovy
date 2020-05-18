@@ -28,24 +28,41 @@ class ScanHelper {
     static void scanDirectory(String path,
                               String root,
                               List<ClassModifier> classModifierList,
-                              File destFile){
+                              File directoryDest){
         LogUtil.d(TAG,"test")
         File dir = new File(path)
-        if (dir.isDirectory()) {
-            dir.eachFileRecurse { File file ->
-                String filePath = file.absolutePath
-                LogUtil.d(TAG,"filePath: $filePath ， file.isFile:${file.isFile()}")
-                if(file.isFile()){
-                    scanClassFile(file, root, classModifierList, destFile)
-                }
+        if (!dir.isDirectory()) {
+            return
+        }
+
+        dir.eachFileRecurse { File file ->
+            String filePath = file.absolutePath
+            LogUtil.d(TAG,"filePath: $filePath ， file.isFile:${file.isFile()} destFile:$directoryDest")
+            if(file.isFile()){
+                scanClassFile(file, root, classModifierList, directoryDest)
             }
         }
+
     }
 
     static boolean scanJar(File jarFile, File destFile,List<ClassModifier> classModifierList) {
         //检查是否存在缓存，有就添加class list 和 设置fileContainsInitClass
-        if (!jarFile )
-            return false
+        if (!jarFile ) return false
+
+        def isScanJarFile = false
+
+        for(ClassModifier classModifier : classModifierList){
+            def isHintCache =
+                    classModifier.getScanResultCacheService().setScanResultFromCache(destFile.getAbsolutePath(),classModifier)
+
+            if(!isHintCache){
+                isScanJarFile = true
+                break
+            }
+
+        }
+
+        if(!isScanJarFile) return
 
         def file = new JarFile(jarFile)
         Enumeration enumeration = file.entries()
@@ -124,15 +141,14 @@ class ScanHelper {
     static void scanClassFile(File classFile,
                               String root,
                               List<ClassModifier> classModifierList,
-                              File destFile){
+                              File directoryDest){
 
         if(classModifierList.size() == 0) return
-//        def shouldProcessClass = shouldProcessClass(entryName, classModifierList)
-//        LogUtil.d(TAG,"scanJar shouldProcessClass:$shouldProcessClass")
+
         def entryName = classFile.absolutePath.replace(root, '')
         def shouldProcessClass = shouldProcessClass(entryName,classModifierList)
-        LogUtil.d(TAG,"scanClassFile entryName:$entryName shouldProcessClass:$shouldProcessClass classFile:$classFile")
-
+        def destFile = new File(directoryDest.absolutePath + File.separator + entryName)
+        LogUtil.d(TAG,"scanClassFile entryName:$entryName shouldProcessClass:$shouldProcessClass classFile:$classFile, destFile:$destFile")
         if(shouldProcessClass){
             scanClass(classFile.newInputStream(),
                       classFile.absolutePath,

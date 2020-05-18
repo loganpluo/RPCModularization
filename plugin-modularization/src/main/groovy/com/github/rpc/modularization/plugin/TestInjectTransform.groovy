@@ -8,6 +8,7 @@ import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformOutputProvider
+import com.github.rpc.modularization.plugin.util.LogUtil
 import org.gradle.api.Project
 import com.android.build.gradle.internal.pipeline.TransformManager
 import org.apache.commons.codec.digest.DigestUtils
@@ -17,12 +18,14 @@ import org.apache.commons.io.FileUtils
 /**
  * 定义一个Transform
  */
-class FirstInjectTransform extends Transform {
+class TestInjectTransform extends Transform {
+
+    private static final String TAG = "TestInjectTransform"
 
     private Project mProject
 
     // 构造函数，我们将Project保存下来备用
-    FirstInjectTransform(Project project) {
+    TestInjectTransform(Project project) {
         this.mProject = project
     }
 
@@ -31,7 +34,7 @@ class FirstInjectTransform extends Transform {
     // 这里应该是：transformClassesWithInjectTransformForxxx
     @Override
     String getName() {
-        return 'FirstInjectTransform'
+        return 'TestInjectTransform'
     }
 
     // 指定输入的类型，通过这里的设定，可以指定我们要处理的文件类型
@@ -65,6 +68,9 @@ class FirstInjectTransform extends Transform {
 
         println "inputs.size: ${inputs.size()}"
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
+
+        def modifyClassFile
+
         inputs.each {
             TransformInput input ->
                 // 遍历文件夹
@@ -73,11 +79,22 @@ class FirstInjectTransform extends Transform {
                 input.directoryInputs.each {
                     DirectoryInput directoryInput ->
 //                        // 注入代码
-                        MyInjectByJavassit.injectToast(directoryInput.file.absolutePath, mProject)
+//                        MyInjectByJavassit.injectToast(directoryInput.file.absolutePath, mProject)
 
                         // 获取输出目录
                         def dest = outputProvider.getContentLocation(directoryInput.name,
                                 directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
+
+                        String root = directoryInput.file.absolutePath
+                        if (!root.endsWith(File.separator)) root += File.separator
+
+                        def targetClassFile =
+                                TestASMClassModify.recordModifyClassByDirectory(directoryInput.file, root, dest)
+
+                        if(targetClassFile != null){
+                            modifyClassFile = targetClassFile
+                            LogUtil.d(TAG,"targetClassFile: $targetClassFile")
+                        }
 
                         println("directory inputname:${directoryInput.file.absolutePath}" +
 //                                " inputType.contentTypes:${directoryInput.contentTypes}" +
@@ -106,6 +123,11 @@ class FirstInjectTransform extends Transform {
                         FileUtils.copyFile(jarInput.file, dest)
                 }
         }
+
+        if(modifyClassFile){
+            TestASMClassModify.testModifyClass(modifyClassFile, "TestInjectTransform")
+        }
+
         long cost = System.currentTimeMillis() - startTs
         println "--------------------- ${getName()} transform cost:$cost 结束-------------------"
     }

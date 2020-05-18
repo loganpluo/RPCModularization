@@ -1,5 +1,7 @@
 package com.github.rpc.modularization.plugin.class_modifier
 
+
+import com.github.rpc.modularization.plugin.incremental_compile.IScanResultCacheService
 import com.github.rpc.modularization.plugin.scan.ClassInfo
 import com.github.rpc.modularization.plugin.util.LogUtil
 import com.github.rpc.modularization.plugin.code_generator.ICodeGenerator
@@ -56,6 +58,15 @@ abstract class ClassModifier {
      */
     abstract ICodeGenerator getICodeGenerator()
 
+    IScanResultCacheService getScanResultCacheService(){
+        return scanResultCacheService
+    }
+
+    IScanResultCacheService scanResultCacheService;
+
+    void setScanResultCacheService(IScanResultCacheService scanResultCacheService){
+        this.scanResultCacheService = scanResultCacheService
+    }
 
 
 }

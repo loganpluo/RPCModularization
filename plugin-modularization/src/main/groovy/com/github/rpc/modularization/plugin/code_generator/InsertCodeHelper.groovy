@@ -35,7 +35,7 @@ class InsertCodeHelper{
      */
     private static byte[] generateCodeIntoClassFile(File file,ClassModifier classModifier) {
         def optClass = new File(file.getParent(), file.name + ".opt")
-
+        LogUtil.d(TAG,"generateCodeIntoClassFile file:"+file.getAbsolutePath())
         FileInputStream inputStream = new FileInputStream(file)
         FileOutputStream outputStream = new FileOutputStream(optClass)
 
@@ -58,6 +58,9 @@ class InsertCodeHelper{
             if (optJar.exists()) optJar.delete()
 
             def file = new JarFile(jarFile)
+
+            LogUtil.d(TAG,"generateCodeIntoJarFile file:"+jarFile.getAbsolutePath())
+
             Enumeration enumeration = file.entries()
             JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(optJar))
 

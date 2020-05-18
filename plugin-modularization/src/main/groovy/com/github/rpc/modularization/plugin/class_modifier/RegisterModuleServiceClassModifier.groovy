@@ -32,7 +32,7 @@ class RegisterModuleServiceClassModifier extends ClassModifier {
         //识别出注解@ModuleService 注解的实现serviceimpl
         if("L${classModifierConfig.scanAnnotation};" == classInfo.annotationDesc){
             LogUtil.i(TAG,"recordClassModifierTarget  success scanAnnotation:${classModifierConfig.scanAnnotation}")
-            LogUtil.i(TAG,"recordClassModifierTarget  success Annotation name:${name}")
+            LogUtil.i(TAG,"recordClassModifierTarget  success Annotation name:${name} destFile:$destFile")
             classList.add(name)
         }
 

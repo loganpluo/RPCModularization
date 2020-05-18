@@ -1,4 +1,10 @@
 package com.github.rpc.modularization;
 
-public interface TestModuleService {
+public interface AppModuleService {
+
+
+
 }
+
+
+

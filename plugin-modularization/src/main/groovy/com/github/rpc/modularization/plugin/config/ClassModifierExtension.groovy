@@ -24,6 +24,11 @@ class ClassModifierExtension {
                         ClassModifier classModifier =
                                 classModifierType.classModifyClass.newInstance()
                         classModifier.parse(it)
+
+                        classModifier.
+                                setScanResultCacheService(
+                                        classModifierType.scanResultCacheServiceClass.newInstance())
+
                         classModifiers.add(classModifier)
                     }catch (Exception e) {
                         println "发现异常：" + e

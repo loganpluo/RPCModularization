@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.github.rpc.modularization.demo.R;
+import com.github.rpc.modularization.test.Test;
 import com.github.rpc.module_personalcenter_api.PersonalCenterModuleService;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,5 +26,8 @@ public class MainActivity extends AppCompatActivity {
                 personalCenterModuleService.goToMyTopicListPage(MainActivity.this);
             }
         });
+
+        new Test().test();
+
     }
 }

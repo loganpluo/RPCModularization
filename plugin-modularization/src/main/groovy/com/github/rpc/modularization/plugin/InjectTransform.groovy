@@ -10,6 +10,7 @@ import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
+import com.github.rpc.modularization.plugin.class_modifier.ClassModifier
 import com.github.rpc.modularization.plugin.class_modifier.ClassModifierType
 import com.github.rpc.modularization.plugin.code_generator.InsertCodeHelper
 import com.github.rpc.modularization.plugin.config.ClassModifierExtension
@@ -84,6 +85,10 @@ class InjectTransform extends Transform {
 
         LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
 
+        extension.classModifiers.each {
+            it.getScanResultCacheService().loadScanResultCache(mProject)
+        }
+
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
         inputs.each {
             TransformInput input ->
@@ -107,6 +112,9 @@ class InjectTransform extends Transform {
                 LogUtil.i(TAG,"classModifiers codeInsertToClassFile:${it.codeInsertToClassFile}, " +
                         " classList.isEmpty:${it.classList.isEmpty()}")
             }
+
+            it.getScanResultCacheService().saveScanResultCache()
+
         }
 
         long cost = System.currentTimeMillis() - startTs
@@ -131,38 +139,62 @@ class InjectTransform extends Transform {
                     "isIncremental：$isIncremental "+
                     "directoryInput.changedFiles.size:${directoryInput.changedFiles.size()} ")
 
-            //增量编译 目录没有变化则无需copy
-//            if(isIncremental && directoryInput.changedFiles.isEmpty()){
-//                continue
-//            }
-
             // 获取输出目录
-            def dest = outputProvider.getContentLocation(directoryInput.name,
+            def directoryDest = outputProvider.getContentLocation(directoryInput.name,
                     directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)
             String root = directoryInput.file.absolutePath
             if (!root.endsWith(File.separator)) root += File.separator
 
             LogUtil.d(TAG,"scanDirectory root:$root")
+            LogUtil.d(TAG,"scanDirectory dest:$directoryDest")
 
-            //增量编译 有变化 则只需要读取变化的文件修改class
-            if(isIncremental && !directoryInput.changedFiles.isEmpty()){
-                LogUtil.d(TAG,"scanDirectory changedFile:${it}")
-                directoryInput.changedFiles.each { fileList ->
-                    def file = fileList.key
-                    if (fileList.value == Status.CHANGED || fileList.value == Status.ADDED) {
-                        ScanHelper.scanClassFile(file,
-                                root, extension.classModifiers,
-                                dest)
+            //增量编译有变化/或者非增量编译 则只需要读取变化的文件修改class
+            if((isIncremental && !directoryInput.changedFiles.isEmpty())){
+
+
+                directoryInput.changedFiles.each { changedFile->
+                    def file = changedFile.key
+                    LogUtil.d(TAG,"directoryInput changedFile:$changedFile.key")
+                    def entryName = file.absolutePath.replace(root, '')
+                    def destFilePath = directoryDest.absolutePath + File.separator + entryName
+                    //先把变动的文件扫描结果缓存移除
+                    for(ClassModifier classModifier : extension.classModifiers){
+                        classModifier.getScanResultCacheService().removeScanResultCache(destFilePath)
                     }
+
+                    //只扫描变动的文件会更新到缓存扫描结果
+                    ScanHelper.scanClassFile(file,root, extension.classModifiers, directoryDest)
                 }
-            }else{
+
+                //应用缓存扫描结果到配置
+                for(ClassModifier classModifier : extension.classModifiers){
+                    classModifier.getScanResultCacheService().applyScanResultCache(classModifier)
+                }
+
+
+
+            }else {
+                if(!isIncremental){
+                    //todo 全部移除
+                }
                 ScanHelper.scanDirectory(directoryInput.file.absolutePath,
                         root, extension.classModifiers,
-                        dest)
+                        directoryDest)
             }
 
+            LogUtil.d(TAG,"scanDirectory isIncremental:$isIncremental dest: ${directoryDest.exists()} " +
+                    "changedFiles.isEmpty:${directoryInput.changedFiles.isEmpty()} dest:${directoryInput.file}, " +
+                    "src:"+directoryInput.file)
+
+
+
+//            //增量编译完全没有变动的无需copy（todo 精细化， 有变化是不是只copy变化的，删除不在的）
+//            if(isIncremental && directoryInput.changedFiles.isEmpty()){
+//                return
+//            }
+
             // 将input的目录复制到output指定目录
-            FileUtils.copyDirectory(directoryInput.file, dest)
+            FileUtils.copyDirectory(directoryInput.file, directoryDest)
         }
     }
 
@@ -179,12 +211,6 @@ class InjectTransform extends Transform {
             def jarName = jarInput.name
             println("jar name: $jarInput.name, isIncremental：$isIncremental jarInput.status: ${jarInput.status}")
 
-            //增量编译 没有变化的返回NOTCHANGED, 则无需copy处理
-//            if(isIncremental && jarInput.status == Status.NOTCHANGED){
-//                LogUtil.d(TAG,"jar name: $jarInput.name, NOTCHANGED")
-//                break
-//            }
-
             def md5Name = DigestUtils.md5Hex(jarInput.file.absolutePath)
             if (jarName.endsWith('.jar')) {
                 jarName = jarName.substring(0, jarName.length() - 4)
@@ -192,10 +218,24 @@ class InjectTransform extends Transform {
             //jar name: :module_test, jarInput.status: CHANGED
             def dest = outputProvider.getContentLocation(jarName + md5Name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
 
-            println("jar jarInput：${jarInput.file.absolutePath} " +
-                    "output jarName:$jarName, md5Name:$md5Name, dest: $dest.absolutePath")
+            LogUtil.d(TAG,"scanJarInputs isIncremental:$isIncremental dest: ${dest.exists()} status:${jarInput.status} dest:$dest, srcJarInput:"+jarInput.file)
+
+            //增量有变动/非增量编译
+            if((isIncremental && jarInput.status == Status.CHANGED) || !isIncremental){
+                //需要清除下缓存
+                for(ClassModifier classModifier : extension.classModifiers){
+                    classModifier.getScanResultCacheService().removeScanResultCache(dest.getAbsolutePath())
+                }
+            }
 
             ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
+
+            //todo 应该不需要copy，没有一点变化则
+            //增量编译 没有变化的返回NOTCHANGED, 则无需copy处理, 缓存配置可以用
+//            if(isIncremental && jarInput.status == Status.NOTCHANGED){
+//                LogUtil.d(TAG,"jar name: $jarInput.name, NOTCHANGED")
+//                break
+//            }
 
             FileUtils.copyFile(jarInput.file, dest)
         }
