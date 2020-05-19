@@ -161,11 +161,14 @@ class InjectTransform extends Transform {
                     def destFilePath = directoryDest.absolutePath + File.separator + entryName
                     //先把变动的文件扫描结果缓存移除
                     for(ClassModifier classModifier : extension.classModifiers){
+                        //我自己测试changedFiles不会返回一个没有变化的文件
                         classModifier.getScanResultCacheService().removeScanResultCache(destFilePath)
                     }
 
-                    //只扫描变动的文件会更新到缓存扫描结果
-                    ScanHelper.scanClassFile(file,root, extension.classModifiers, directoryDest)
+                    //只扫描变动的文件会更新到缓存扫描结果 只扫描 新增 和修改，删除不用扫描
+                    if(changedFile.value == Status.CHANGED || changedFile.value == Status.ADDED){
+                        ScanHelper.scanClassFile(file,root, extension.classModifiers, directoryDest)
+                    }
                 }
 
                 //应用缓存扫描结果到配置

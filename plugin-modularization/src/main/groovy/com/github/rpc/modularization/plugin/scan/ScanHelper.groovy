@@ -47,22 +47,22 @@ class ScanHelper {
 
     static boolean scanJar(File jarFile, File destFile,List<ClassModifier> classModifierList) {
         //检查是否存在缓存，有就添加class list 和 设置fileContainsInitClass
-        if (!jarFile ) return false
-
-        def isScanJarFile = false
-
-        for(ClassModifier classModifier : classModifierList){
-            def isHintCache =
-                    classModifier.getScanResultCacheService().setScanResultFromCache(destFile.getAbsolutePath(),classModifier)
-
-            if(!isHintCache){
-                isScanJarFile = true
-                break
-            }
-
-        }
-
-        if(!isScanJarFile) return
+//        if (!jarFile ) return false
+//
+//        def isScanJarFile = false
+//
+//        for(ClassModifier classModifier : classModifierList){
+//            def isHintCache =
+//                    classModifier.getScanResultCacheService().setScanResultFromCache(destFile.getAbsolutePath(),classModifier)
+//
+//            if(!isHintCache){
+//                isScanJarFile = true
+//                break
+//            }
+//
+//        }
+//
+//        if(!isScanJarFile) return
 
         def file = new JarFile(jarFile)
         Enumeration enumeration = file.entries()

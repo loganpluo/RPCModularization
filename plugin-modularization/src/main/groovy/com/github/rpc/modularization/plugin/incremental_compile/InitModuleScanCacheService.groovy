@@ -29,6 +29,8 @@ class InitModuleScanCacheService implements IScanResultCacheService {
     @Override
     void removeScanResultCache(String scanFileOrJarPath) {
         scanResultCacheMap.remove(scanFileOrJarPath)
+        LogUtil.d(TAG,"removeScanResultCache isSuccess:${scanResultCacheMap.containsKey(scanFileOrJarPath)} " +
+                "scanFileOrJarPath:$scanFileOrJarPath")
     }
 
     @Override
@@ -57,6 +59,7 @@ class InitModuleScanCacheService implements IScanResultCacheService {
 
     void applyScanResultCache(ClassModifier classModifier){
         scanResultCacheMap.each {
+            LogUtil.d(TAG,"applyScanResultCache key:"+it.key)
             if(it.value.codeInsertToClassFilePath != null &&
                it.value.codeInsertToClassFilePath.length() > 0){
                 classModifier.codeInsertToClassFile = new File(it.value.codeInsertToClassFilePath)
