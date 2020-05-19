@@ -85,6 +85,7 @@ class InjectTransform extends Transform {
 
         LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
 
+        //加载缓存的扫描结果
         extension.classModifiers.each {
             it.getScanResultCacheService().loadScanResultCache(mProject)
         }
@@ -148,13 +149,14 @@ class InjectTransform extends Transform {
             LogUtil.d(TAG,"scanDirectory root:$root")
             LogUtil.d(TAG,"scanDirectory dest:$directoryDest")
 
-            //增量编译有变化/或者非增量编译 则只需要读取变化的文件修改class
-            if((isIncremental && !directoryInput.changedFiles.isEmpty())){
 
+            //增量编译
+            if(isIncremental){// && !directoryInput.changedFiles.isEmpty()
 
+                //只需要扫描变化的文件class
                 directoryInput.changedFiles.each { changedFile->
                     def file = changedFile.key
-                    LogUtil.d(TAG,"directoryInput changedFile:$changedFile.key")
+                    LogUtil.d(TAG,"scanDirectory directoryInput changedFile:$changedFile.key")
                     def entryName = file.absolutePath.replace(root, '')
                     def destFilePath = directoryDest.absolutePath + File.separator + entryName
                     //先把变动的文件扫描结果缓存移除
@@ -171,30 +173,24 @@ class InjectTransform extends Transform {
                     classModifier.getScanResultCacheService().applyScanResultCache(classModifier)
                 }
 
-
-
-            }else {
-                if(!isIncremental){
-                    //todo 全部移除
+                //将input的目录复制到output指定目录（目录文件完全没有变化 则无需copy）
+                if(!directoryInput.changedFiles.isEmpty()){
+                    FileUtils.copyDirectory(directoryInput.file, directoryDest)
+                    LogUtil.d(TAG,"scanDirectory changedFiles copy ${directoryInput.file} to ${directoryDest}")
                 }
-                ScanHelper.scanDirectory(directoryInput.file.absolutePath,
-                        root, extension.classModifiers,
-                        directoryDest)
+
+                return
             }
 
-            LogUtil.d(TAG,"scanDirectory isIncremental:$isIncremental dest: ${directoryDest.exists()} " +
-                    "changedFiles.isEmpty:${directoryInput.changedFiles.isEmpty()} dest:${directoryInput.file}, " +
-                    "src:"+directoryInput.file)
+            //todo 全部移除 目前是依赖默认clean缓存目录(app/build/intermediates/plugin-modularization/InitModule.json)
 
-
-
-//            //增量编译完全没有变动的无需copy（todo 精细化， 有变化是不是只copy变化的，删除不在的）
-//            if(isIncremental && directoryInput.changedFiles.isEmpty()){
-//                return
-//            }
+            ScanHelper.scanDirectory(directoryInput.file.absolutePath,
+                    root, extension.classModifiers,
+                    directoryDest)
 
             // 将input的目录复制到output指定目录
             FileUtils.copyDirectory(directoryInput.file, directoryDest)
+            LogUtil.d(TAG,"scanDirectory all copy ${directoryInput.file} to ${directoryDest}")
         }
     }
 
