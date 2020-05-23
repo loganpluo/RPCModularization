@@ -15,7 +15,7 @@ import com.github.rpc.modularization.plugin.class_modifier.ClassModifierType
 import com.github.rpc.modularization.plugin.code_generator.InsertCodeHelper
 import com.github.rpc.modularization.plugin.config.ClassModifierExtension
 import com.github.rpc.modularization.plugin.scan.ScanHelper
-import com.github.rpc.modularization.plugin.util.GlobalConfig
+import com.github.rpc.modularization.plugin.config.GlobalConfig
 import com.github.rpc.modularization.plugin.util.LogUtil
 import org.gradle.api.Project
 import com.android.build.gradle.internal.pipeline.TransformManager
@@ -77,15 +77,15 @@ class InjectTransform extends Transform {
         println "-------------------- ${getName()} transform 开始 isIncremental：${isIncremental}, " +
                 "isCacheable:${isCacheable()}-------------------"
 
-        if("true" == mProject.getProperties().get("isDebugPMLog")){
-            LogUtil.isDebugPMLog = true
-            println("isDebugPMLog true")
+        if("true" == mProject.getProperties().get("enableDebugPMLog")){
+            LogUtil.enableDebugPMLog = true
+            println("enableDebugPMLog true")
         }
 
-        def userIncrementalCache = mProject.getProperties().get("userIncrementalCache")
-        GlobalConfig.userIncrementalCache = userIncrementalCache == 'true'
-        if(GlobalConfig.userIncrementalCache){
-            LogUtil.d(TAG,"userIncrementalCache")
+        def enableIncrementalCache = mProject.getProperties().get("enableIncrementalCache")
+        GlobalConfig.enableIncrementalCache = enableIncrementalCache == 'true'
+        if(GlobalConfig.enableIncrementalCache){
+            LogUtil.d(TAG,"enableIncrementalCache")
         }
 
         println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.type}"
@@ -93,7 +93,7 @@ class InjectTransform extends Transform {
         LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
 
         //加载缓存的扫描结果
-        if(GlobalConfig.userIncrementalCache){
+        if(GlobalConfig.enableIncrementalCache){
             extension.classModifiers.each {
                 it.getScanResultCacheService().loadScanResultCache(mProject)
             }
@@ -115,7 +115,7 @@ class InjectTransform extends Transform {
         }
 
         //增量编译则应用最新缓存扫描结果到配置
-        if(isIncremental && GlobalConfig.userIncrementalCache){
+        if(isIncremental && GlobalConfig.enableIncrementalCache){
             for(ClassModifier classModifier : extension.classModifiers){
                 classModifier.getScanResultCacheService().applyScanResultCache(classModifier)
             }
@@ -167,7 +167,7 @@ class InjectTransform extends Transform {
 
 
             //增量编译
-            if(isIncremental && GlobalConfig.userIncrementalCache){
+            if(isIncremental && GlobalConfig.enableIncrementalCache){
 
                 //只需要扫描变化的文件class
                 directoryInput.changedFiles.each { changedFile->
@@ -230,7 +230,7 @@ class InjectTransform extends Transform {
 
             LogUtil.d(TAG,"scanJarInputs isIncremental:$isIncremental dest: ${dest.exists()} status:${jarInput.status} dest:$dest, srcJarInput:"+jarInput.file)
 
-            if(isIncremental && GlobalConfig.userIncrementalCache){
+            if(isIncremental && GlobalConfig.enableIncrementalCache){
                 //增量编译，只扫描编译的class
                 if(jarInput.status == Status.CHANGED){
                     //移除变动的缓存记录

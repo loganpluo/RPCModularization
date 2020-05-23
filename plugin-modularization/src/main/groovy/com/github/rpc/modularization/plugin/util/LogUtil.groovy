@@ -2,10 +2,10 @@ package com.github.rpc.modularization.plugin.util
 
 class LogUtil{
 
-    static boolean isDebugPMLog = false
+    static boolean enableDebugPMLog = false
 
     static void d(String TAG, String msg){
-        if(isDebugPMLog){
+        if(enableDebugPMLog){
             println(" $TAG : $msg")
         }
     }
