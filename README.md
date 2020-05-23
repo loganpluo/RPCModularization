@@ -216,6 +216,11 @@ public class MyApplication extends Application {
 插件介绍：
 https://github.com/loganpluo/RPCModularization/blob/master/plugin-modularization/README.md <br>
 
+插件增量编译支持配置gradle.properties
+```
+##使用增量编译缓存
+enableIncrementalCache=true
+```
 
 <br>
 
