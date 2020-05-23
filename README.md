@@ -170,7 +170,7 @@ classmodifier{
 ```
 ### step4: 根目录gradle.properties进行增量编译、debug日志配置
 ```
-##插件true开启debug修改字节码插件日志（修改值后注意clean才会去掉缓存）
+##插件true开启debug修改字节码插件日志
 enableDebugPMLog=true
 
 ##使用增量编译缓存
