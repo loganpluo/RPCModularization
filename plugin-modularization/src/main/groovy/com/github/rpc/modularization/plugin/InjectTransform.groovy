@@ -15,6 +15,7 @@ import com.github.rpc.modularization.plugin.class_modifier.ClassModifierType
 import com.github.rpc.modularization.plugin.code_generator.InsertCodeHelper
 import com.github.rpc.modularization.plugin.config.ClassModifierExtension
 import com.github.rpc.modularization.plugin.scan.ScanHelper
+import com.github.rpc.modularization.plugin.util.GlobalConfig
 import com.github.rpc.modularization.plugin.util.LogUtil
 import org.gradle.api.Project
 import com.android.build.gradle.internal.pipeline.TransformManager
@@ -81,13 +82,21 @@ class InjectTransform extends Transform {
             println("isDebugPMLog true")
         }
 
+        def userIncrementalCache = mProject.getProperties().get("userIncrementalCache")
+        GlobalConfig.userIncrementalCache = userIncrementalCache == 'true'
+        if(GlobalConfig.userIncrementalCache){
+            LogUtil.d(TAG,"userIncrementalCache")
+        }
+
         println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.type}"
 
         LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
 
         //加载缓存的扫描结果
-        extension.classModifiers.each {
-            it.getScanResultCacheService().loadScanResultCache(mProject)
+        if(GlobalConfig.userIncrementalCache){
+            extension.classModifiers.each {
+                it.getScanResultCacheService().loadScanResultCache(mProject)
+            }
         }
 
         // Transform的inputs有两种类型，一种是目录，一种是jar包，要分开遍历
@@ -106,7 +115,7 @@ class InjectTransform extends Transform {
         }
 
         //增量编译则应用最新缓存扫描结果到配置
-        if(isIncremental){
+        if(isIncremental && GlobalConfig.userIncrementalCache){
             for(ClassModifier classModifier : extension.classModifiers){
                 classModifier.getScanResultCacheService().applyScanResultCache(classModifier)
             }
@@ -158,7 +167,7 @@ class InjectTransform extends Transform {
 
 
             //增量编译
-            if(isIncremental){// && !directoryInput.changedFiles.isEmpty()
+            if(isIncremental && GlobalConfig.userIncrementalCache){
 
                 //只需要扫描变化的文件class
                 directoryInput.changedFiles.each { changedFile->
@@ -221,31 +230,32 @@ class InjectTransform extends Transform {
 
             LogUtil.d(TAG,"scanJarInputs isIncremental:$isIncremental dest: ${dest.exists()} status:${jarInput.status} dest:$dest, srcJarInput:"+jarInput.file)
 
-            if(!isIncremental){//全量编译
-                //需要清除下缓存
-                for(ClassModifier classModifier : extension.classModifiers){
-                    classModifier.getScanResultCacheService().removeScanResultCache(dest.getAbsolutePath())
+            if(isIncremental && GlobalConfig.userIncrementalCache){
+                //增量编译，只扫描编译的class
+                if(jarInput.status == Status.CHANGED){
+                    //移除变动的缓存记录
+                    for(ClassModifier classModifier : extension.classModifiers){
+                        classModifier.getScanResultCacheService().removeScanResultCache(dest.getAbsolutePath())
+                    }
+                    //扫描jar
+                    ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
+
                 }
-                ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
+
+                //copy变动的
+                LogUtil.d(TAG,"scanJarInputs jarInput.status${jarInput.status} src: ${jarInput.file} dest:$dest")
                 FileUtils.copyFile(jarInput.file, dest)
-                LogUtil.d(TAG,"scanJarInputs copy all src: ${jarInput.file} dest:$dest")
                 continue
             }
 
-            //增量编译，只扫描编译的class
-            if(jarInput.status == Status.CHANGED){
-                //移除变动的缓存记录
-                for(ClassModifier classModifier : extension.classModifiers){
-                    classModifier.getScanResultCacheService().removeScanResultCache(dest.getAbsolutePath())
-                }
-                //扫描jar
-                ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
-
+            //需要清除下缓存
+            for(ClassModifier classModifier : extension.classModifiers){
+                classModifier.getScanResultCacheService().removeScanResultCache(dest.getAbsolutePath())
             }
-
-            //copy变动的
-            LogUtil.d(TAG,"scanJarInputs jarInput.status${jarInput.status} src: ${jarInput.file} dest:$dest")
+            ScanHelper.scanJar(jarInput.file, dest, extension.classModifiers)
             FileUtils.copyFile(jarInput.file, dest)
+            LogUtil.d(TAG,"scanJarInputs copy all src: ${jarInput.file} dest:$dest")
+
         }
     }
 
