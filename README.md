@@ -23,7 +23,7 @@ RPCModularization跨模块通信 采用 接口方式来进行，主要分为三�
 ```
 buildscript {
     repositories {
-        maven{url 'https://dl.bintray.com/loganpluo/maven/'}//暂时这样引用，审核通过之后jceneter之后就不需要了
+        maven{ url'https://maven.aliyun.com/repository/jcenter'}
     }
     dependencies {
         classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
