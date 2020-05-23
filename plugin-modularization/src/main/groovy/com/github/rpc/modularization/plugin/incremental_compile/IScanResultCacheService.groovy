@@ -19,16 +19,6 @@ interface IScanResultCacheService {
      */
     void removeScanResultCache(String scanFileOrJarPath)
 
-    /**
-     * case 1: 如果是目录文件，则直接查找，命中则直接add到ClassModifier，返回true
-     * case 2: 如果是jar文件，则直接查找，命中则直接add到ClassModifier，返回true
-     * @param scanFileOrJar
-     * @param ClassModifier
-     * @return
-     */
-    boolean setScanResultFromCache(String scanFileOrJarPath, ClassModifier ClassModifier)
-
-
     void applyScanResultCache(ClassModifier classModifier)
 
     void updateScanResult(String destFile, ScanResult scanResult)

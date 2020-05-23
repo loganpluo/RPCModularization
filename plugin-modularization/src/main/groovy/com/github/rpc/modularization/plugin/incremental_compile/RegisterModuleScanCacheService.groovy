@@ -17,9 +17,10 @@ class RegisterModuleScanCacheService implements IScanResultCacheService {
     @Override
     void loadScanResultCache(Project project) {
         cacheFile = FileUtil.getCacheFile(project,"RegisterModule.json")
-        LogUtil.d(TAG,"loadScanResultCache cacheFile:$cacheFile")
         Map<String,ScanResult> resultMap = FileUtil.parse(cacheFile, new TypeToken<HashMap<String, ScanResult>>() {
         }.getType())
+        LogUtil.d(TAG,"loadScanResultCache cacheFile:$cacheFile")
+        LogUtil.d(TAG,"loadScanResultCache resultMap:$resultMap")
         if(resultMap != null){
             scanResultCacheMap.putAll(resultMap)
         }
@@ -33,27 +34,21 @@ class RegisterModuleScanCacheService implements IScanResultCacheService {
     }
 
     @Override
-    boolean setScanResultFromCache(String scanFileOrJarPath, ClassModifier classModifier) {
-        def scanResult =
-                scanResultCacheMap.get(scanFileOrJarPath)
-
-        LogUtil.d(TAG,"setScanResultFromCache " +
-                "scanFileOrJarPath:$scanFileOrJarPath " +
-                "codeInsertToClassFile:${classModifier.codeInsertToClassFile} " +
-                "classList:${ classModifier.classList }")
-
-        if(scanResult != null){
-            classModifier.codeInsertToClassFile = new File(scanResult.codeInsertToClassFilePath)
-            classModifier.classList.addAll(scanResult.classList)
-            return true
-        }
-
-        return false
-    }
-
-    @Override
     void applyScanResultCache(ClassModifier classModifier) {
+        scanResultCacheMap.each {
+            LogUtil.d(TAG,"applyScanResultCache key:"+it.key)
+            if(it.value.codeInsertToClassFilePath != null &&
+                    it.value.codeInsertToClassFilePath.length() > 0){
+                classModifier.codeInsertToClassFile = new File(it.value.codeInsertToClassFilePath)
+                LogUtil.d(TAG,"applyScanResultCache codeInsertToClassFile:${classModifier.codeInsertToClassFile}")
+            }
 
+            if(it.value.classList != null && it.value.classList.size() > 0){
+                LogUtil.d(TAG,"applyScanResultCache classList:${it.value.classList}")
+                classModifier.classList.addAll(it.value.classList)
+            }
+
+        }
     }
 
     @Override
@@ -84,7 +79,9 @@ class RegisterModuleScanCacheService implements IScanResultCacheService {
 
         try{
             if(cacheFile != null){
-                cacheFile.write(new Gson().toJson(scanResultCacheMap))
+                def scanResultCacheMapString = new Gson().toJson(scanResultCacheMap)
+                LogUtil.d(TAG,"saveScanResultCache scanResultCacheMapString:$scanResultCacheMapString")
+                cacheFile.write(scanResultCacheMapString)
             }
         }catch(Throwable throwable){
             throwable.printStackTrace()

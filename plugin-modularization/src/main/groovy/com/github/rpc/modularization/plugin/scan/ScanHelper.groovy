@@ -22,15 +22,15 @@ class ScanHelper {
      *  扫描目录 找到
      *  //收集到待注入的模块 和 模块服务实现
      *  //检测到被注入模块的class
-     * @param path
+     * @param directoryPath
      * @param project
      */
-    static void scanDirectory(String path,
+    static void scanDirectory(String directoryPath,
                               String root,
                               List<ClassModifier> classModifierList,
                               File directoryDest){
         LogUtil.d(TAG,"test")
-        File dir = new File(path)
+        File dir = new File(directoryPath)
         if (!dir.isDirectory()) {
             return
         }

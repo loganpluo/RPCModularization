@@ -33,30 +33,6 @@ class InitModuleScanCacheService implements IScanResultCacheService {
                 "scanFileOrJarPath:$scanFileOrJarPath")
     }
 
-    @Override
-    boolean setScanResultFromCache(String scanFileOrJarPath, ClassModifier classModifier) {
-        def scanResult =
-                scanResultCacheMap.get(scanFileOrJarPath)
-
-        if(scanResult != null){
-            LogUtil.d(TAG,"setScanResultFromCache " +
-                    "scanFileOrJarPath:$scanFileOrJarPath " +
-                    "codeInsertToClassFile:${scanResult.codeInsertToClassFilePath} " +
-                    "classList:${ scanResult.classList }")
-            if(scanResult.codeInsertToClassFilePath != null &&
-               scanResult.codeInsertToClassFilePath.length() > 0){
-                classModifier.codeInsertToClassFile = new File(scanResult.codeInsertToClassFilePath)
-            }
-
-            if(scanResult.classList != null && scanResult.classList.size() > 0 ){
-                classModifier.classList.addAll(scanResult.classList)
-            }
-            return true
-        }
-
-        return false
-    }
-
     void applyScanResultCache(ClassModifier classModifier){
         scanResultCacheMap.each {
             LogUtil.d(TAG,"applyScanResultCache key:"+it.key)
