@@ -119,6 +119,9 @@ buildscript {
 
 ```
 
+### step3: app
+
+
 ### stpe3: app主工程的application的onCreate 初始化模块管理中心
 
 ```
