@@ -7,7 +7,7 @@ import org.gradle.api.Project
 interface IScanResultCacheService {
 
     /**
-     * 缓存形式
+     * 增量编译，加载上次扫描结果的缓存
      * Map<String,ScanResult>
      */
     void loadScanResultCache(Project project)
@@ -19,8 +19,17 @@ interface IScanResultCacheService {
      */
     void removeScanResultCache(String scanFileOrJarPath)
 
+    /**
+     * 增量编译后，最新扫描结果会同步到 缓存；把扫描结果应用到 ClassModifier配置
+     * @param classModifier
+     */
     void applyScanResultCache(ClassModifier classModifier)
 
+    /**
+     * 增量编译，把变动的文件或jar包扫描结果 同步到缓存里面
+     * @param destFile
+     * @param scanResult
+     */
     void updateScanResult(String destFile, ScanResult scanResult)
 
 
