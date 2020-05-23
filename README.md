@@ -119,10 +119,66 @@ buildscript {
 
 ```
 
-### step3: app
+### step3: app主工程的build.gradle引入modularization.gradle
+* modularization.gradle为扫描模块通信、自动初始化和 修改字节码 配置
+* 自己主要进行过滤扫描配置， exclude正则过滤配置,如果能确定接口所在包名可以用 include正则过滤
+
+```
+apply plugin: 'com.github.rpc.modularization'
 
 
-### stpe3: app主工程的application的onCreate 初始化模块管理中心
+classmodifier{
+    configs = [
+        [ //自动注册组件
+          'type'             : 'InterfaceModuleInit',
+          'scanInterface'             : 'com.github.rpc.modularization.RPCModule'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModules'
+          , 'codeInsertToMethodParams': 'android.content.Context'
+          , 'codeInsertToMethodLocalVariables':[//asm 站桩方法的变量定义
+                                        ['name':'context', 'type': 'android.content.Context']
+          ]
+          , 'callMethodName'      : 'initModule'
+          , 'callMethodParams': 'android.content.Context;com.github.rpc.modularization.RPCModule'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//           ]
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+                 'androidx.'.replaceAll("\\.", "/") + ".*",
+                  'android.support'.replaceAll("\\.", "/") + ".*"
+            ]
+        ],
+        [ //自动注册组件
+          'type'             : 'AnnotationModuleAutoRegister',
+          'scanAnnotation'   : 'com.github.rpc.modularization.ModuleService'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModuleServices'
+          , 'callMethodName'      : 'registerService'
+          , 'callMethodParams': 'java.lang.Class'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//            ]
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+                 'androidx.'.replaceAll("\\.", "/") + ".*",
+                  'android.support'.replaceAll("\\.", "/") + ".*"
+            ]
+        ]
+    ]
+}
+
+
+```
+### step4: 根目录gradle.properties进行增量编译、debug日志配置
+```
+##插件true开启debug修改字节码插件日志（修改值后注意clean才会去掉缓存）
+enableDebugPMLog=true
+
+##使用增量编译缓存
+enableIncrementalCache=true
+
+```
+
+### stpe5: app主工程的application的onCreate 初始化模块管理中心
 
 ```
 public class MyApplication extends Application {
@@ -137,7 +193,7 @@ public class MyApplication extends Application {
 }
 ```
 
-### step4: 在实现模块的api目录下，添加.api文件，最好建个和实现模块包名一样
+### step6: 在实现模块的api目录下，添加.api文件，最好建个和实现模块包名一样
 
 ```
 public interface LoginService{
@@ -145,12 +201,12 @@ public interface LoginService{
 }
 ```
 
-### step5: module_login模块的build.gradle引入 自动生成的 module_login_api工程
+### step7: module_login模块的build.gradle引入 自动生成的 module_login_api工程
 ```
     api project(":module_login_api")
 ```
 
-### step6: module_login模块 接口实现类 继承.api的接口，并且注解为 @ModuleService
+### step8: module_login模块 接口实现类 继承.api的接口，并且注解为 @ModuleService
 
 ```
 @ModuleService
@@ -162,7 +218,7 @@ public class LoginModuleServiceImpl implements LoginService {
 }
 ```
 
-### step7: 模块初始化类继承RPCModule接口
+### step9: 模块初始化类继承RPCModule接口
 ```
 
 public class LoginModule implements RPCModule {
@@ -174,7 +230,7 @@ public class LoginModule implements RPCModule {
 
 ```
 
-### step8: 其他模块 依赖module_login_api， 调用接口LoginService
+### step10: 其他模块 依赖module_login_api， 调用接口LoginService
 
 ```
         String userName =
@@ -204,7 +260,7 @@ public class MyApplication extends Application {
 
 ```
 
-### step9: run
+### step11: run
 你会惊喜的发现一下日志, 模块自动初始化完成， 接口和 实现自动注册到 模块管理中心了
 ```
 2020-05-07 21:52:05.215 6525-6525/com.github.rpc.modularization D/LoginModule: LoginModule onInit
