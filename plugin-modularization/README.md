@@ -41,6 +41,9 @@ src/main/groovy/com.github.rpc.modularization.plugin
     RegisterModuleServiceClassModifier.groovy -- 模块接口服务绑定字节码修改处理类，得到被修改的class 和 需要注入的class
     RegisterModuleServiceCodeGenerator.groovy -- 模模块接口服务绑定字节码插入代码处理类，把需要注入的class，到被修改的class的方法里面
     ApiDirHelper.groovy -- 自动识别 gradle.properties配置的module_iml_api_src的.api目录为src目录
+    IScanResultCacheService.groovy -- 增量编译 应用缓存扫描结果接口定义
+    InitModuleScanCacheService.groovy -- 自动初始化模块字节码修改 增量编译扫描实现
+    RegisterModuleScanCacheService.groovy -- 自动注册模块字节码修改 增量编译扫描实现
 ```
 
 
@@ -48,7 +51,7 @@ src/main/groovy/com.github.rpc.modularization.plugin
 #### step1 根目录 build.gradle plugin-modularization插件修改成本地仓库引用
 ```
     repositories {
-        maven {//本地Maven仓库地址找自定义的插件 todo 后面放到远程maven
+        maven {//本地Maven仓库地址找自定义的插件 
             url uri('repos')
         }
     }
