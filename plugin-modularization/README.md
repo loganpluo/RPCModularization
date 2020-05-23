@@ -94,7 +94,7 @@ javap -c D:\Hello.class<br>
 
 #### step8 有问题的化，比对编译出来的class 和目标的class结构，可以看出
 
-#### 插件增量编译支持配置gradle.properties
+#### step9 插件增量编译支持配置gradle.properties
 
 ```
 ##使用增量编译缓存
