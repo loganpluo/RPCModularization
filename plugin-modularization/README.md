@@ -100,7 +100,51 @@ javap -c D:\Hello.class<br>
 ##使用增量编译缓存
 enableIncrementalCache=true
 ```
-  
 
-### 需要优化的部分
-* 编译速度, 已经做了支持 include 指定扫描类 和 exclude过滤类，正则规则貌似有点问题，还需要验证下
+#### step10 插件编译过滤配置,正则表达式
+* modularization.gradle include 和 exclude属性配置，注意匹配的是包名是/分隔符； 
+```
+apply plugin: 'com.github.rpc.modularization'
+
+
+classmodifier{
+    configs = [
+        [ //自动注册组件
+          'type'             : 'InterfaceModuleInit',
+          'scanInterface'             : 'com.github.rpc.modularization.RPCModule'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModules'
+          , 'codeInsertToMethodParams': 'android.content.Context'
+          , 'codeInsertToMethodLocalVariables':[//asm 站桩方法的变量定义
+                                        ['name':'context', 'type': 'android.content.Context']
+          ]
+          , 'callMethodName'      : 'initModule'
+          , 'callMethodParams': 'android.content.Context;com.github.rpc.modularization.RPCModule'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//           ]
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+                 'androidx.'.replaceAll("\\.", "/") + ".*",
+                  'android.support'.replaceAll("\\.", "/") + ".*"
+            ]
+        ],
+        [ //自动注册组件
+          'type'             : 'AnnotationModuleAutoRegister',
+          'scanAnnotation'   : 'com.github.rpc.modularization.ModuleService'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModuleServices'
+          , 'callMethodName'      : 'registerService'
+          , 'callMethodParams': 'java.lang.Class'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//            ]
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+                 'androidx.'.replaceAll("\\.", "/") + ".*",
+                  'android.support'.replaceAll("\\.", "/") + ".*"
+            ]
+        ]
+    ]
+}
+```
+
+
