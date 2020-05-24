@@ -1,4 +1,11 @@
-import java.util.regex.Pattern
+//import java.util.regex.Pattern
+//
+//def pattern = Pattern.compile('androidx.'.replace(".","\\")+ "\\.*")
+//def testClass = "androidx\\appcompat\\app\\ActionBar\$DisplayOptions.class"
+//def isPattern = pattern.matcher(testClass).matches()
+//println("test pattern:$pattern")
+//println("test testClass:$testClass")
+//println("test isPattern:$isPattern")
 
 //ext.mainApp = true  //设置为true，表示此module为主app module，一直以application方式编译
 println("app luopeng gradle")
