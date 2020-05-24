@@ -35,12 +35,18 @@ src/main/groovy/com.github.rpc.modularization.plugin
     InjectTransform.groovy -- transform api 拦截到 class 打包成dex之前
     ClassModifierExtension -- 获取到modularization.gradle的配置 转成 classModifiers
     ScanHelper.groovy -- 扫描 目录、jar、 class 类，调用classModifiers
+    
     ClassModifier -- 字节码修改功能抽象类，抽象方法有 配置解析、扫描记录目标类信息、字节码修改，方便后续扩展支持新配置修改字节码；
     InitModuleClassModifier.groovy -- 模块初始化字节码修改处理类，得到被修改的class 和 需要注入的class
     InitModuleCodeGenerator.groovy -- 模块初始化字节码插入代码类，把需要注入的class，到被修改的class的方法里面
     RegisterModuleServiceClassModifier.groovy -- 模块接口服务绑定字节码修改处理类，得到被修改的class 和 需要注入的class
     RegisterModuleServiceCodeGenerator.groovy -- 模模块接口服务绑定字节码插入代码处理类，把需要注入的class，到被修改的class的方法里面
+    
     ApiDirHelper.groovy -- 自动识别 gradle.properties配置的module_iml_api_src的.api目录为src目录
+    
+    IScanResultCacheService.groovy -- 增量编译 应用缓存扫描结果接口定义
+    InitModuleScanCacheService.groovy -- 自动初始化模块字节码修改 增量编译扫描实现
+    RegisterModuleScanCacheService.groovy -- 自动注册模块字节码修改 增量编译扫描实现
 ```
 
 
@@ -48,7 +54,7 @@ src/main/groovy/com.github.rpc.modularization.plugin
 #### step1 根目录 build.gradle plugin-modularization插件修改成本地仓库引用
 ```
     repositories {
-        maven {//本地Maven仓库地址找自定义的插件 todo 后面放到远程maven
+        maven {//本地Maven仓库地址找自定义的插件 
             url uri('repos')
         }
     }
@@ -88,9 +94,57 @@ javap -c D:\Hello.class<br>
 
 #### step8 有问题的化，比对编译出来的class 和目标的class结构，可以看出
 
+#### step9 插件增量编译支持配置gradle.properties
 
-```    
+```
+##使用增量编译缓存
+enableIncrementalCache=true
+```
 
-### 需要优化的部分
-* 编译速度, 已经做了支持 include 指定扫描类 和 exclude过滤类，正则规则貌似有点问题，还需要验证下
-* 只有run app任务才执行查找类， upload library 发现也执行，这个再查询下原因，但是会修改失败
+#### step10 插件编译过滤配置,正则表达式
+* modularization.gradle include 和 exclude属性配置，注意匹配的是包名是/分隔符； 
+```
+apply plugin: 'com.github.rpc.modularization'
+
+
+classmodifier{
+    configs = [
+        [ //自动注册组件
+          'type'             : 'InterfaceModuleInit',
+          'scanInterface'             : 'com.github.rpc.modularization.RPCModule'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModules'
+          , 'codeInsertToMethodParams': 'android.content.Context'
+          , 'codeInsertToMethodLocalVariables':[//asm 站桩方法的变量定义
+                                        ['name':'context', 'type': 'android.content.Context']
+          ]
+          , 'callMethodName'      : 'initModule'
+          , 'callMethodParams': 'android.content.Context;com.github.rpc.modularization.RPCModule'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//           ]
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+                 'androidx.'.replaceAll("\\.", "/") + ".*",
+                  'android.support'.replaceAll("\\.", "/") + ".*"
+            ]
+        ],
+        [ //自动注册组件
+          'type'             : 'AnnotationModuleAutoRegister',
+          'scanAnnotation'   : 'com.github.rpc.modularization.ModuleService'
+          , 'codeInsertToClass'   : 'com.github.rpc.modularization.RPCModuleServiceManager'
+          , 'codeInsertToMethod'      : 'initModuleServices'
+          , 'callMethodName'      : 'registerService'
+          , 'callMethodParams': 'java.lang.Class'
+//          , 'include'                 : [//包含类，支持正则表达式（包分隔符需要用/表示，不能用.）
+//                                         'com.github.rpc'.replaceAll("\\.", "/") + ".*",
+//            ]
+          , 'exclude'                 : [//排除的类，支持正则表达式（包分隔符需要用/表示，不能用.）
+                 'androidx.'.replaceAll("\\.", "/") + ".*",
+                  'android.support'.replaceAll("\\.", "/") + ".*"
+            ]
+        ]
+    ]
+}
+```
+
+
