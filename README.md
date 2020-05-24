@@ -26,7 +26,7 @@ buildscript {
         maven{ url'https://maven.aliyun.com/repository/jcenter'}
     }
     dependencies {
-        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.2'
     }
 }
 
@@ -104,7 +104,7 @@ api project(":module_login_api")
 ### step1: 模块和app主工程的build.gradle 引入 rpc-modularization组件
 ```
 
-implementation 'com.github.rpc.modularization:rpc-modularization:1.0.3'
+implementation 'com.github.rpc.modularization:rpc-modularization:1.0.4'
 
 ```
 
@@ -113,7 +113,7 @@ implementation 'com.github.rpc.modularization:rpc-modularization:1.0.3'
 ```
 buildscript {
     dependencies {
-        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.3'
+        classpath 'com.github.rpc.modularization:plugin-modularization:1.0.2'
     }
 }
 
