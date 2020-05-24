@@ -1,6 +1,7 @@
 package com.github.rpc.modularization.plugin
 
 import com.github.rpc.modularization.plugin.config.ClassModifierExtension
+import com.github.rpc.modularization.plugin.config.GlobalConfig
 import com.github.rpc.modularization.plugin.util.LogUtil
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -14,10 +15,13 @@ class ModularizationPlugin implements Plugin<Project> {
         println()
         println("=========== ${project.name} ModularizationPlugin start=============")
 //        ModuleDebugAbleHelper.doDebugAbleModule(project)
+        initGlobalConfigFromProperties(project)
         def appExtension = project.extensions.findByType(AppExtension)
         if(appExtension){// app工程才执行字节码修改 模块初始化 和 自动注册
+            if(!GlobalConfig.enableInjectTransform){
+                return
+            }
             project.extensions.create(ClassModifierExtension.EXT_NAME, ClassModifierExtension)
-//            def android = project.extensions.getByType(AppExtension)
             InjectTransform injectTransform = new InjectTransform(project)
             appExtension.registerTransform(injectTransform)
 //            TestInjectTransform testInjectTransform = new TestInjectTransform(project)
@@ -25,9 +29,29 @@ class ModularizationPlugin implements Plugin<Project> {
             project.afterEvaluate {
                 init(project, injectTransform)
             }
-        }else{// library 工程 依赖api
+            return
+        }
+
+        // library 工程 依赖api
+        if(GlobalConfig.enableApiDirSrc){
             ApiDirHelper.apiDir(project)
         }
+    }
+
+    static void initGlobalConfigFromProperties(Project project){
+
+        def enableInjectTransform = project.getProperties().get("enableInjectTransform")
+        GlobalConfig.enableInjectTransform = enableInjectTransform == 'true'
+        LogUtil.d(TAG,"enableInjectTransform ${GlobalConfig.enableInjectTransform}")
+
+        def enableApiDirSrc = project.getProperties().get("enableApiDirSrc")
+        GlobalConfig.enableApiDirSrc = enableApiDirSrc == 'true'
+        LogUtil.d(TAG,"enableApiDirSrc ${GlobalConfig.enableApiDirSrc}")
+
+        def enableIncrementalCache = project.getProperties().get("enableIncrementalCache")
+        GlobalConfig.enableIncrementalCache = enableIncrementalCache == 'true'
+        LogUtil.d(TAG,"enableIncrementalCache ${GlobalConfig.enableIncrementalCache}")
+
     }
 
     static ClassModifierExtension init(Project project, InjectTransform transformImpl) {

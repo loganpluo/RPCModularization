@@ -82,12 +82,6 @@ class InjectTransform extends Transform {
             println("enableDebugPMLog true")
         }
 
-        def enableIncrementalCache = mProject.getProperties().get("enableIncrementalCache")
-        GlobalConfig.enableIncrementalCache = enableIncrementalCache == 'true'
-        if(GlobalConfig.enableIncrementalCache){
-            LogUtil.d(TAG,"enableIncrementalCache")
-        }
-
         println "inputs.size: ${inputs.size()} ,ClassModifyType:${ClassModifierType.InterfaceModuleInit.type}"
 
         LogUtil.i(TAG,"classModifiers: ${extension.classModifiers}")
