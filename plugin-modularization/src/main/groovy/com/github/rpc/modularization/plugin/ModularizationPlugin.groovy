@@ -20,8 +20,8 @@ class ModularizationPlugin implements Plugin<Project> {
 //            def android = project.extensions.getByType(AppExtension)
             InjectTransform injectTransform = new InjectTransform(project)
             appExtension.registerTransform(injectTransform)
-            TestInjectTransform testInjectTransform = new TestInjectTransform(project)
-            appExtension.registerTransform(testInjectTransform)
+//            TestInjectTransform testInjectTransform = new TestInjectTransform(project)
+//            appExtension.registerTransform(testInjectTransform)
             project.afterEvaluate {
                 init(project, injectTransform)
             }
