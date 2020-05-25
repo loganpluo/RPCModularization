@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
 
@@ -77,18 +79,12 @@ def autoCreateApiModule(String moduleName, String apiModuleName){
         return
     }
 
-    //存在 api_module且没有变动
-    if(!isApiFileModified(apiFiles, modulePath) && new File(apiModulePath).exists()){
-        println("autoCreateApiModule apiFileDir:$apiFileDir not Modified")
-        return
-    }
-
     //有变动则创建Api模块，把.api接口文件 copy到api模块，并重命名成.java文件(先粗暴的删除后copy .api文件)
-    createApiModule(apiFiles,apiModulePath,moduleMainPath)
+    createApiModule(apiFiles, apiModulePath, modulePath, moduleMainPath)
 }
 
 
-def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMainPath){
+def createApiModule(List<File> apiFiles, String apiModulePath, String modulePath, String moduleMainPath){
     File apiModuleDir = new File(apiModulePath)
 
     // 创建 biz_module_api/module_test_api $apiModulePath
@@ -97,7 +93,7 @@ def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMain
     }
 
     // 创建 biz_module_api/module_test_api/src/main/java 把.api copy到这个目录下面，没有文件夹则创建并重命名
-    createApiJavaSrc(apiFiles, apiModulePath)
+    createApiJavaSrc(apiFiles, modulePath, apiModulePath)
 
     //创建 biz_module_api/module_test_api/src/main/res todo 支持资源
 
@@ -110,24 +106,77 @@ def createApiModule(List<File> apiFiles, String apiModulePath, String moduleMain
 
 }
 
-void createApiJavaSrc(List<File> apiFiles, String apiModulePath){
-    //先删除 todo diff 更新
+
+void createApiJavaSrc(List<File> apiFiles,String modulePath, String apiModulePath){
+
+    def apiLastModifiedFile = new File("${modulePath}api_lastmodified")
+
+    def lastFileLastModifiedMap = readCache(apiLastModifiedFile)
+    println(" readCache lastFileLastModifiedMap:$lastFileLastModifiedMap")
     def javaDirPath = "${apiModulePath}src/main/java/"
     def javaDir = new File(javaDirPath)
-
-    if(javaDir.exists()){
-        javaDir.delete()
+    if(!javaDir.exists()){
+        javaDir.mkdirs()
     }
 
-    def result = javaDir.mkdirs()
-
-    println("createApiModule javaDir:$javaDir , mkdirs result:$result")
-
+    def needDeletedFileMap = new HashMap<String, Long>(lastFileLastModifiedMap)
+    def newFileLastModifiedMap = new HashMap<String, Long>()
     for(File file : apiFiles){
-        def descFile = getCreateDescFile(file, javaDirPath)
-        copyFile(file, descFile)
+        def key = file.getPath()
+        //新增或者修改
+        if(!lastFileLastModifiedMap.containsKey(key) ||
+                file.lastModified() > lastFileLastModifiedMap.get(key)){
+            def descFile = getCreateDescFile(file, javaDirPath)
+            println("copy key:$key, " +
+                    "containsKey:${lastFileLastModifiedMap.containsKey(key)}" +
+                    ",file.lastModified:${file.lastModified()}, " +
+                    "cacheLastModifyied:${lastFileLastModifiedMap.get(key)} , copy to descFile:$descFile")
+            copyFile(file, descFile)
+        }
+        needDeletedFileMap.remove(key)
+        newFileLastModifiedMap.put(key, file.lastModified())
     }
+
+    //删除文件
+    needDeletedFileMap.each {
+        def descFile = getDescFile(it.key, javaDirPath)
+        if(descFile.exists()){
+            descFile.delete()
+        }
+        println("delete $descFile")
+    }
+
+    //缓存
+    save(apiLastModifiedFile, newFileLastModifiedMap)
 }
+
+//读取缓存的文件里面的json对象
+
+static Map<String,Long> readCache(File apiLastModifiedFile){
+
+    if(!apiLastModifiedFile.exists()){
+        return new HashMap<String, Long>()
+    }
+
+    def apiLastModifiedFileMapString =
+            readFileContent(apiLastModifiedFile)
+
+    if(apiLastModifiedFileMapString == null || apiLastModifiedFileMapString.length() == 0){
+        return new HashMap<String, Long>()
+    }
+
+    return (HashMap<String, Long>)new JsonSlurper().parseText(apiLastModifiedFileMapString)
+
+}
+
+static void save(File apiLastModifiedFile, Map<String,Long> fileLastModifiedMap){
+    if(!apiLastModifiedFile.exists()){
+        apiLastModifiedFile.createNewFile()
+    }
+    println("save $apiLastModifiedFile apiLastModifiedFile.exists:${apiLastModifiedFile.exists()}")
+    writeFile(apiLastModifiedFile, JsonOutput.toJson(fileLastModifiedMap))
+}
+
 
 
 void createAndroidManifest(String apiModulePath, String moduleMainPath){
@@ -206,46 +255,6 @@ static void createGitIgnore(String apiModulePath){
     writeFile(gitIgnoreFile, content)
 }
 
-/**
- *
- * @param apiFiles
- * @param modulePath
- * @return
- */
-static def isApiFileModified(List<File> apiFiles, String modulePath){
-    def apiLastModifiedFile = new File("${modulePath}api_lastmodified")
-    def apiFilesLastModifiedRecordMd5 = ""
-    if(!apiLastModifiedFile.exists()){
-        apiLastModifiedFile.createNewFile()
-    }else{
-        apiFilesLastModifiedRecordMd5 = readFileContent(apiLastModifiedFile)
-    }
-    def apiFilesModifiedRecord = new StringBuilder()
-    apiFiles.each {
-        println("autoCreateApiModule apiFile $it , lastModified:${it.lastModified()}")
-        apiFilesModifiedRecord.append(it.path)
-        apiFilesModifiedRecord.append("_")
-        apiFilesModifiedRecord.append(it.lastModified())
-        apiFilesModifiedRecord.append("&")
-    }
-    println("apiFilesModifiedRecord:$apiFilesModifiedRecord")
-    def ts = System.currentTimeMillis()
-    def md5 = md5(apiFilesModifiedRecord.toString())
-    def cost = System.currentTimeMillis() - ts
-    println("apiFilesModifiedRecord md5:$md5, cost:$cost, apiFilesLastModifiedRecordMd5:$apiFilesLastModifiedRecordMd5")
-    def isModify = apiFilesLastModifiedRecordMd5 != md5
-
-    if(isModify){
-        ts = System.currentTimeMillis()
-        writeFile(apiLastModifiedFile, md5)
-        cost = System.currentTimeMillis() - ts
-        println("apiFilesModifiedRecord write md5:$md5, cost:$cost")
-    }else{
-        println("api file no Modify")
-    }
-
-    return isModify
-}
 
 static def findApiFiles(File apiFileDir, List<File> apiFiles){
 
@@ -265,28 +274,6 @@ static def findApiFiles(File apiFileDir, List<File> apiFiles){
 }
 
 
-static def md5(String input) {
-    if(input == null || input.length() == 0) {
-        return null;
-    }
-    try {
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        md5.update(input.getBytes());
-        byte[] byteArray = md5.digest();
-
-        BigInteger bigInt = new BigInteger(1, byteArray);
-        // 参数16表示16进制
-        String result = bigInt.toString(16);
-        // 不足32位高位补零
-        while(result.length() < 32) {
-            result = "0" + result;
-        }
-        return result;
-    } catch (NoSuchAlgorithmException e) {
-        e.printStackTrace();
-    }
-    return null;
-}
 
 static def readFileContent(File file){
 
@@ -315,9 +302,11 @@ static def writeFile(File file, String content){
 
 
 def getCreateDescFile(File src, String javaDirPath){
-    def index = src.getPath().indexOf(module_iml_api_src) + module_iml_api_src.length()
-    def packageFilePath = src.getPath().substring(index)
-    def descFile = new File("${javaDirPath}$packageFilePath".replace(".api",".java"))
+    return getCreateDescFile(src.getPath(), javaDirPath)
+}
+
+def getCreateDescFile(String srcFilePath, String javaDirPath){
+    def descFile = getDescFile(srcFilePath, javaDirPath)
     println("getCreateDescFile descFile:$descFile")
     if(!descFile.exists()){
         descFile.getParentFile().mkdirs()
@@ -326,6 +315,13 @@ def getCreateDescFile(File src, String javaDirPath){
     }else{
         println("desc exist")
     }
+    return descFile
+}
+
+def getDescFile(String srcFilePath, String javaDirPath){
+    def index = srcFilePath.indexOf(module_iml_api_src) + module_iml_api_src.length()
+    def packageFilePath = srcFilePath.substring(index)
+    def descFile = new File("${javaDirPath}$packageFilePath".replace(".api",".java"))
     return descFile
 }
 
