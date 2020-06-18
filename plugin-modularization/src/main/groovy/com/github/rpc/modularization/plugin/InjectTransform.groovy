@@ -117,11 +117,10 @@ class InjectTransform extends Transform {
 
         //根据扫描收集到信息 进行 class的修改
         extension.classModifiers.each {
+            LogUtil.i(TAG,"classModifiers codeInsertToClassFile:${it.codeInsertToClassFile}, " +
+                    " classList:${it.classList}")
             if(it.hasWholeInfo()){
                 InsertCodeHelper.insertInitCodeTo(it)
-            }else{
-                LogUtil.i(TAG,"classModifiers codeInsertToClassFile:${it.codeInsertToClassFile}, " +
-                        " classList.isEmpty:${it.classList.isEmpty()}")
             }
 
             it.getScanResultCacheService().saveScanResultCache()

@@ -104,6 +104,7 @@ def createApiModule(List<File> apiFiles, String apiModulePath, String modulePath
     // 创建 biz_module_api/module_test_api/.gitignore
     createGitIgnore(apiModulePath)
 
+    //todo 强制刷新下文件夹哈
 }
 
 

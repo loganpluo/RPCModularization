@@ -18,8 +18,8 @@ abstract class CommScanCacheService implements IScanResultCacheService {
         cacheFile = FileUtil.getCacheFile(project,getCacheFileName())
         Map<String,ScanResult> resultMap = FileUtil.parse(cacheFile, new TypeToken<HashMap<String, ScanResult>>() {
         }.getType())
-        LogUtil.d(getTag(),"loadScanResultCache cacheFile:$cacheFile")
-        LogUtil.d(getTag(),"loadScanResultCache resultMap:$resultMap")
+        LogUtil.i(getTag(),"loadScanResultCache cacheFile:$cacheFile")
+        LogUtil.i(getTag(),"loadScanResultCache resultMap:$resultMap")
         if(resultMap != null){
             scanResultCacheMap.putAll(resultMap)
         }
@@ -33,22 +33,22 @@ abstract class CommScanCacheService implements IScanResultCacheService {
     @Override
     void removeScanResultCache(String scanFileOrJarPath) {
         scanResultCacheMap.remove(scanFileOrJarPath)
-        LogUtil.d(getTag(),"removeScanResultCache isSuccess:${scanResultCacheMap.containsKey(scanFileOrJarPath)} " +
+        LogUtil.i(getTag(),"removeScanResultCache isSuccess:${scanResultCacheMap.containsKey(scanFileOrJarPath)} " +
                 "scanFileOrJarPath:$scanFileOrJarPath")
     }
 
     @Override
     void applyScanResultCache(ClassModifier classModifier) {
         scanResultCacheMap.each {
-            LogUtil.d(getTag(),"applyScanResultCache key:"+it.key)
+            LogUtil.i(getTag(),"applyScanResultCache key:"+it.key)
             if(it.value.codeInsertToClassFilePath != null &&
                     it.value.codeInsertToClassFilePath.length() > 0){
                 classModifier.codeInsertToClassFile = new File(it.value.codeInsertToClassFilePath)
-                LogUtil.d(getTag(),"applyScanResultCache codeInsertToClassFile:${classModifier.codeInsertToClassFile}")
+                LogUtil.i(getTag(),"applyScanResultCache codeInsertToClassFile:${classModifier.codeInsertToClassFile}")
             }
 
             if(it.value.classList != null && it.value.classList.size() > 0){
-                LogUtil.d(getTag(),"applyScanResultCache classList:${it.value.classList}")
+                LogUtil.i(getTag(),"applyScanResultCache classList:${it.value.classList}")
                 classModifier.classList.addAll(it.value.classList)
             }
 
@@ -57,7 +57,7 @@ abstract class CommScanCacheService implements IScanResultCacheService {
 
     @Override
     void updateScanResult(String destFilePath, ScanResult scanResult) {
-        LogUtil.d(getTag(),"updateScanResult " +
+        LogUtil.i(getTag(),"updateScanResult " +
                 "destFilePath:$destFilePath " +
                 "codeInsertToClassFilePath:${scanResult.codeInsertToClassFilePath} " +
                 "classList:${ scanResult.classList }")
@@ -84,7 +84,7 @@ abstract class CommScanCacheService implements IScanResultCacheService {
         try{
             if(cacheFile != null){
                 def scanResultCacheMapString = new Gson().toJson(scanResultCacheMap)
-                LogUtil.d(getTag(),"saveScanResultCache scanResultCacheMapString:$scanResultCacheMapString")
+                LogUtil.i(getTag(),"saveScanResultCache scanResultCacheMapString:$scanResultCacheMapString")
                 cacheFile.write(scanResultCacheMapString)
             }
         }catch(Throwable throwable){

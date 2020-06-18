@@ -20,13 +20,13 @@ interface IScanResultCacheService {
     void removeScanResultCache(String scanFileOrJarPath)
 
     /**
-     * 增量编译后，最新扫描结果会同步到 缓存；把扫描结果应用到 ClassModifier配置
-     * @param classModifier
+     * 增量编译后，最新扫描结果会同步到 缓存；把扫描结果(也包括未变动class jar 扫描结果)应用到 ClassModifier配置
+     * @param classModifier 字节码配置
      */
     void applyScanResultCache(ClassModifier classModifier)
 
     /**
-     * 增量编译，把变动的文件或jar包扫描结果 同步到缓存里面
+     * 把文件或jar包扫描结果 同步到内存缓存里面
      * @param destFile
      * @param scanResult
      */
@@ -34,7 +34,7 @@ interface IScanResultCacheService {
 
 
     /**
-     * 全部扫描完毕之后 再进行缓存的更新
+     * 全部扫描完毕之后，把最新内存扫描结果同步到本地文件缓存
      */
     void saveScanResultCache()
 
